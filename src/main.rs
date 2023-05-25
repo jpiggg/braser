@@ -35,7 +35,7 @@ use stringify::lexer::run as lexer;
 // ];
 
 fn main() {
-    let str = "a${3$'hello': 3$\"world\"}";
+    let str = "a${3$\"ghbdtn%ß\"$3: 3$\"ß%vbjbfjfeb \"\" \'dffdfd%ß\"$3}";
     let result = lexer(str);
     println!("Hello, world! {:?}", result);
 }
