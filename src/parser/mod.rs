@@ -37,8 +37,6 @@ use crate::shared::Node;
 // 	Array: 'ARR',
 // };
 
-// [Token { name: "OS", value: "" }, Token { name: "ST", value: "\"ghbdtn%ß\"$" }, Token { name: "KT", value: "" }, Token { name: "ST", value: "\"ß%vbjbfjfeb \"\" 'dffdfd%ß\"$" }, Token { name: "OE", value: "" }]
-
 fn is_valid_object_key(token_type: &str) -> bool {
 	match token_type {
 		"string" => true,
