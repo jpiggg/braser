@@ -3,6 +3,7 @@ pub mod helpers;
 
 use std::{collections::HashMap};
 use helpers::{is_quote};
+use crate::shared::tokens::{token_types, Token};
 
 const TOKEN_NAME: &'static str = "TOKEN_NAME";
 const TOKEN_VALUE: &'static str  = "TOKEN_VALUE";
@@ -52,12 +53,6 @@ impl<'a> Ctx<'a> {
     }
 }
 
-#[derive(Debug)]
-pub struct Token<'a> {
-    name: &'a str,
-    value: &'a str
-}
-
 pub fn run(source: &str) -> Vec<Token>{
     let tokens: HashMap<&str, &str> =  HashMap::from([
         ("a$", "OS"),
@@ -75,24 +70,6 @@ pub fn run(source: &str) -> Vec<Token>{
         ("7$", "DT"),
         ("8$", "BI"),
         ("9$", "FU")
-    ]);
-
-    let token_types :HashMap<&str, &str> = HashMap::from([
-        ("OS", "object"),
-        ("OE", "object"),
-        ("AS", "array"),
-        ("AE", "array"),
-        ("KT", "key_terminator"),
-        ("LT", "listing_terminator"),
-        ("UN", "undefined"),
-        ("NL", "null"),
-        ("BO", "boolean"),
-        ("ST", "string"),
-        ("NU", "number"),
-        ("NA", "nan"),
-        ("DT", "date"),
-        ("BI", "bigint"),
-        ("FU", "function")
     ]);
 
     let chars: Vec<char> = source.chars().collect();
