@@ -54,32 +54,45 @@ fn is_key_pair(token_slice: &[Token<'_>]) -> bool {
 	false
 }
 
-fn create_node<'a>(token_type: &'a str, mut node: Node<'a>, mut tokens: &'a [Token<'a>]) -> (Node<'a>, &'a [Token<'a>]){
-	if token_type == "objectEnd" || token_type == "arrayEnd" {
-		return (node, &tokens[1..tokens.len()]);
-	}
+fn create_node<'a>(mut node: Node<'a>, mut tokens: &'a [Token<'a>]) -> (Node<'a>, &'a [Token<'a>]){
+	let token_type = token_types.get(&tokens[0].name).unwrap();
 
-	match token_type {
+	match *token_type {
 		"objectStart" => {
-			let (value, rest) = create_object(Node {
-				kind: "object",
-				value: "",
-				children: vec![]
-			}, &tokens[1..(tokens.len())]);
+			if is_valid_object_key(token_types.get(&tokens[1].name).unwrap()) && is_key_pair(&tokens[1..3]){
+				let mut root_node = Node {
+					kind: "object",
+					value: "",
+					children: vec![]
+				};
 
-			node.children.push(value);
-			tokens = rest;
+				let (new_node, rest) = create_node (Node {
+					kind: "pair",
+					value: tokens[1].value,
+					children: vec![]
+				}, &tokens[3..(tokens.len())]);
 
+				root_node.children.push(new_node);
+				node.children.push(root_node);
+				tokens = rest;
+
+			}
 		},
 		"arrayStart" => {
-			let (value, rest) = create_array(Node {
+			let (new_node, rest) = create_node( Node {
 				kind: "array",
 				value: "",
 				children: vec![]
 			}, &tokens[1..(tokens.len())]);
 
-			node.children.push(value);
+			node.children.push(new_node);
 			tokens = rest;
+		},
+		"objectEnd" => {
+			return (node, &tokens[1..tokens.len()]);
+		},
+		"arrayEnd" => {
+			return (node, &tokens[1..tokens.len()]);
 		},
 		_ => {
 			node.children.push(Node {
@@ -95,54 +108,12 @@ fn create_node<'a>(token_type: &'a str, mut node: Node<'a>, mut tokens: &'a [Tok
 	(node, tokens)
 }
 
-fn create_object<'a>(mut node: Node<'a>, mut tokens: &'a [Token<'a>]) -> (Node<'a>, &'a [Token<'a>]) {
-	let token_type = token_types.get(&tokens[0].name).unwrap();
-
-	if *token_type == "objectEnd" {
-		return (node, tokens);
-	}
-
-	if is_valid_object_key(token_type) && is_key_pair(&tokens[0..2]){	
-		let value_type = token_types.get(&tokens[2].name).unwrap();
-
-		let (new_node, rest) = create_node(*value_type, Node {
-			kind: "pair",
-			value: tokens.first().unwrap().value,
-			children: vec![]
-		}, &tokens[2..(tokens.len())]);
-		tokens = rest;
-		node.children.push(new_node);
-	}
-
-	(node, tokens)
-
-}
-
-fn create_array<'a>(mut node: Node<'a>, mut tokens: &'a [Token<'a>]) -> (Node<'a>, &'a [Token<'a>]){
-	let token_type = token_types.get(&tokens[0].name).unwrap();
-
-	if *token_type == "arrayEnd" {
-		return (node, tokens);
-	}
-
-	let (new_node, rest) = create_node(*token_type, node.clone(), tokens);
-
-	tokens = rest;
-	node.children.push(new_node);
-
-	(node, tokens)
-}
-
-
-
 pub fn run<'a>(root: Node<'a>, tokens: &'a [Token<'a>]) -> Node<'a> {
 	if tokens.len() == 0 {
 		return root;
 	}
 
-	let token = tokens[0];
-	let token_type = token_types.get(token.name).unwrap();
-	let (new_node, rest) = create_node(token_type, root.clone(), tokens);
+	let (new_node, rest) = create_node( root.clone(), tokens);
 
 	run(new_node, rest)
 }

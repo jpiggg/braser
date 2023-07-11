@@ -17,7 +17,6 @@ pub struct Char {
 }
 
 pub fn accumulate_string(char: Char) -> bool {
-    println!("Here is accumulate_string, {:?}", char);
     if is_quote(char.prev_char) && char.cur_char == '$' && char.next_char.unwrap() == '3' {
         return true;
     }
@@ -98,8 +97,6 @@ pub fn run(source: &str) -> Vec<Token>{
 
         match ctx.0 {
             "TOKEN_NAME" => {
-                println!("Creating token name....for {:?}", char);
-
                 let mut name: Option<&&str> = tokens.get(&char.cur_char.to_string() as &str);
 
                 if char.prev_char != None && name == None {
@@ -161,8 +158,6 @@ pub fn run(source: &str) -> Vec<Token>{
 
                     ctx = Ctx::new();
                 }
-
-                println!("Creating token value....");
             },
             _ => println!("There is no accumulators for specific token type {}", ctx.3.unwrap()),
         }

@@ -38,7 +38,7 @@ use stringify::shared::Node;
 
 fn main() {
     let str: &str = "a${3$\"ghbdtn%ß\"$3: 3$\"ß%vbjbfjfeb \"\" \'dffdfd%ß\"$3}";
-    // let str2: &str = "a${3$\"hello"$3: a${3$\"foo"$3: 3$\"bar"$3}}";
+    // let str2: &str = "a${3$\"hello\"$3: a${3$\"foo\"$3: 3$\"bar\"$3}}";
     let result = lexer(str);
     println!("Hello, lexer! {:?}", result);
 
