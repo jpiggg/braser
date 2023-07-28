@@ -3,6 +3,7 @@ pub mod helpers;
 
 use std::{collections::HashMap};
 use helpers::{is_quote};
+use crate::shared::tokens::{token_types, Token};
 
 const TOKEN_NAME: &'static str = "TOKEN_NAME";
 const TOKEN_VALUE: &'static str  = "TOKEN_VALUE";
@@ -16,7 +17,6 @@ pub struct Char {
 }
 
 pub fn accumulate_string(char: Char) -> bool {
-    println!("Here is accumulate_string, {:?}", char);
     if is_quote(char.prev_char) && char.cur_char == '$' && char.next_char.unwrap() == '3' {
         return true;
     }
@@ -52,12 +52,6 @@ impl<'a> Ctx<'a> {
     }
 }
 
-#[derive(Debug)]
-pub struct Token<'a> {
-    name: &'a str,
-    value: &'a str
-}
-
 pub fn run(source: &str) -> Vec<Token>{
     let tokens: HashMap<&str, &str> =  HashMap::from([
         ("a$", "OS"),
@@ -75,24 +69,6 @@ pub fn run(source: &str) -> Vec<Token>{
         ("7$", "DT"),
         ("8$", "BI"),
         ("9$", "FU")
-    ]);
-
-    let token_types :HashMap<&str, &str> = HashMap::from([
-        ("OS", "object"),
-        ("OE", "object"),
-        ("AS", "array"),
-        ("AE", "array"),
-        ("KT", "key_terminator"),
-        ("LT", "listing_terminator"),
-        ("UN", "undefined"),
-        ("NL", "null"),
-        ("BO", "boolean"),
-        ("ST", "string"),
-        ("NU", "number"),
-        ("NA", "nan"),
-        ("DT", "date"),
-        ("BI", "bigint"),
-        ("FU", "function")
     ]);
 
     let chars: Vec<char> = source.chars().collect();
@@ -121,8 +97,6 @@ pub fn run(source: &str) -> Vec<Token>{
 
         match ctx.0 {
             "TOKEN_NAME" => {
-                println!("Creating token name....for {:?}", char);
-
                 let mut name: Option<&&str> = tokens.get(&char.cur_char.to_string() as &str);
 
                 if char.prev_char != None && name == None {
@@ -184,8 +158,6 @@ pub fn run(source: &str) -> Vec<Token>{
 
                     ctx = Ctx::new();
                 }
-
-                println!("Creating token value....");
             },
             _ => println!("There is no accumulators for specific token type {}", ctx.3.unwrap()),
         }
