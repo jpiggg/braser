@@ -1,4 +1,4 @@
-use crate::shared::tokens::{token_types, Token};
+use crate::shared::tokens::{TOKEN_TYPES, Token};
 use crate::shared::Node;
 
 /* eslint-disable no-param-reassign */
@@ -55,11 +55,11 @@ fn is_key_pair(token_slice: &[Token<'_>]) -> bool {
 }
 
 fn create_node<'a>(mut node: Node<'a>, mut tokens: &'a [Token<'a>]) -> (Node<'a>, &'a [Token<'a>]){
-	let token_type = token_types.get(&tokens[0].name).unwrap();
+	let token_type = TOKEN_TYPES.get(&tokens[0].name).unwrap();
 
 	match *token_type {
 		"objectStart" => {
-			if is_valid_object_key(token_types.get(&tokens[1].name).unwrap()) && is_key_pair(&tokens[1..3]){
+			if is_valid_object_key(TOKEN_TYPES.get(&tokens[1].name).unwrap()) && is_key_pair(&tokens[1..3]){
 				let mut root_node = Node {
 					kind: "object",
 					value: "",

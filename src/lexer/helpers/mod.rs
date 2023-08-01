@@ -19,9 +19,16 @@ pub fn is_exp(char: Option<char>) -> bool {
     }
 }
 
-pub fn is_quote(char: Option<char>) -> bool {
+pub fn is_single_quote(char: Option<char>) -> bool {
     match char {
-        Some(char) => char == '\'' || char == '"',
+        Some(char) => char == '\'',
+        None => false
+    }
+}
+
+pub fn is_double_quote(char: Option<char>) -> bool {
+    match char {
+        Some(char) => char == '"',
         None => false
     }
 }
