@@ -1,8 +1,8 @@
-use std::{collections::HashMap};
+use std::collections::HashMap;
 use lazy_static::lazy_static; 
 
 lazy_static! {
-    pub static ref token_types: HashMap<&'static str, &'static str> = HashMap::from([
+    pub static ref TOKEN_TYPES: HashMap<&'static str, &'static str> = HashMap::from([
 		("OS", "objectStart"),
 		("OE", "objectEnd"),
 		("AS", "arrayStart"),

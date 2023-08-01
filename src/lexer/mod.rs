@@ -1,47 +1,74 @@
 pub mod tokens;
 pub mod helpers;
 
-use std::{collections::HashMap};
-use helpers::{is_quote};
-use crate::shared::tokens::{token_types, Token};
+use std::fmt;
+use std::collections::HashMap;
+use helpers::{is_double_quote, is_single_quote, is_digit, is_sign, is_exp};
+use crate::shared::tokens::{TOKEN_TYPES, Token};
 
 const TOKEN_NAME: &'static str = "TOKEN_NAME";
 const TOKEN_VALUE: &'static str  = "TOKEN_VALUE";
 
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub struct Char {
     prev_char: Option<char>,
     cur_char:  char,
     next_char: Option<char>
 }
 
+impl fmt::Display for Char {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "Char consists from: \nprev_char: {}, \nchar: {}, \nnext_char: {}", self.prev_char.unwrap(), self.cur_char, self.next_char.unwrap_or_default())
+    }
+}
+
 pub fn accumulate_string(char: Char) -> bool {
-    if is_quote(char.prev_char) && char.cur_char == '$' && char.next_char.unwrap() == '3' {
+    println!("{}", char);
+    if char.prev_char.unwrap() != '$' && is_double_quote(Some(char.cur_char)) && char.prev_char.unwrap() != '\\' {
         return true;
     }
 
-    false
 
+
+    false
 }
+
 pub fn accumulate_date(char: Char) -> bool {
-    if is_quote(char.next_char) || char.next_char.unwrap() == ',' {
+    if char.cur_char == 'Z' {
         return true;
     }
 
     false
 }
 pub fn accumulate_number(char: Char) -> bool {
-    if is_quote(char.next_char) || char.next_char.unwrap() == ',' {
+    if is_digit(Some(char.cur_char)) || 
+        is_sign(Some(char.cur_char)) && is_digit(char.next_char) ||
+        char.cur_char == '.' && is_digit(char.next_char) ||
+        char.cur_char == '.' && is_digit(char.prev_char) ||
+        is_exp(Some(char.cur_char)) && is_sign(char.next_char) {
+        return false;
+    }
+
+    true
+}
+
+pub fn accumulate_boolean(char: Char) -> bool {
+    if char.cur_char == '1' || char.cur_char == '0' {
         return true;
     }
 
     false
 }
 
-pub fn accumulate_boolean() -> bool {
-    true
+pub fn accumulate_function(char: Char) -> bool {
+    if char.cur_char == '}' && char.next_char.unwrap() == '$' {
+        return true;
+    }
+
+    false
 }
+
 
 #[derive(Copy, Clone, Debug)]
 pub struct Ctx<'a> (&'static str, &'a str, &'a str, Option<&'a str>);
@@ -65,6 +92,7 @@ pub fn run(source: &str) -> Vec<Token>{
         ("2$", "BO"),
         ("3$", "ST"),
         ("4$", "NU"),
+        ("5$", "IN"),
         ("6$", "NA"),
         ("7$", "DT"),
         ("8$", "BI"),
@@ -77,6 +105,7 @@ pub fn run(source: &str) -> Vec<Token>{
     fn should_create_token_value (token_type: &'static str) -> bool {
         match token_type {
             "string" => true,
+            "date" => true,
             "number" => true,
             "bigint" => true,
             "boolean" => true,
@@ -105,7 +134,7 @@ pub fn run(source: &str) -> Vec<Token>{
                 }
 
                 if name != None {
-                    let token_type = token_types.get(*name.clone().unwrap());
+                    let token_type = TOKEN_TYPES.get(*name.clone().unwrap());
 
                     ctx.1 = name.unwrap();
                     ctx.3 = Some(*token_type.unwrap());
@@ -139,6 +168,9 @@ pub fn run(source: &str) -> Vec<Token>{
                     Some("string") => {
                         is_finished = accumulate_string(char);
                     },
+                    Some("date") => {
+                        is_finished = accumulate_date(char);
+                    },
                     Some("number") => {
                         is_finished = accumulate_number(char);
                     },
@@ -146,7 +178,10 @@ pub fn run(source: &str) -> Vec<Token>{
                         is_finished = accumulate_number(char);
                     },
                     Some("boolean") => {
-                        is_finished = accumulate_boolean();
+                        is_finished = accumulate_boolean(char);
+                    },
+                    Some("function") => {
+                        is_finished = accumulate_function(char);
                     },
                     None => println!("There is no token types provided"),
                     _ => println!("The default behavior")
