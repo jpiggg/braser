@@ -44,8 +44,95 @@ fn test_flatten_object() {
     let expected = Node{
         kind: "root",
         value: "",
-        children: vec![]
+        children: vec![
+            Node {
+                kind: "object",
+                value: "",
+                children: vec![
+                    Node {
+                        kind: "pair",
+                        value: "\"foo####\\\" bar\\\"\"",
+                        children: vec![
+                            Node {
+                                kind: "string",
+                                value: "\"test\"",
+                                children: vec![],
+                            },
+                        ],
+                    },
+                    Node {
+                        kind: "pair",
+                        value: "\"hi\"",
+                        children: vec![
+                            Node {
+                                kind: "number",
+                                value: "100500",
+                                children: vec![],
+                            },
+                        ],
+                    },
+                    Node {
+                        kind: "pair",
+                        value: "\"date\"",
+                        children: vec![
+                            Node {
+                                kind: "date",
+                                value: "2023-08-01T14:32:01.624Z",
+                                children: vec![],
+                            },
+                        ],
+                    },
+                    Node {
+                        kind: "pair",
+                        value: "\"myFn\"",
+                        children: vec![
+                            Node {
+                                kind: "function",
+                                value: "function my_fn(a, b) {\n        return a + b;\n    }",
+                                children: vec![],
+                            },
+                        ],
+                    },
+                    Node {
+                        kind: "pair",
+                        value: "\"undefined\"",
+                        children: vec![
+                            Node {
+                                kind: "undefined",
+                                value: "",
+                                children: vec![],
+                            },
+                        ],
+                    },
+                    Node {
+                        kind: "pair",
+                        value: "\"nan\"",
+                        children: vec![
+                            Node {
+                                kind: "nan",
+                                value: "",
+                                children: vec![],
+                            },
+                        ],
+                    },
+                    Node {
+                        kind: "pair",
+                        value: "\"null\"",
+                        children: vec![
+                            Node {
+                                kind: "null",
+                                value: "",
+                                children: vec![],
+                            },
+                        ],
+                    },
+                ],
+            },
+    ]
     };
 
     assert_eq!(result, expected);
 }
+
+#[test]
+fn nested_object() {}
