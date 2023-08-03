@@ -39,7 +39,7 @@ use stringify::shared::Node;
 fn main() {
     // let str: &str = "a${"3$foo\" bar\"": 3$\"ß%vbjbfjfeb \"\" \'dffdfd%ß\"}";
     // let str0: &str = r#"a${3$"foo\" bar\"":3$"test"}"#;
-    let str1: &str = r#"a${3$"foo\" bar\"":3$"test",3$"hi":4$100500,3$"date":7$2023-08-01T14:32:01.624Z,3$"myFn":9$function my_fn(a, b) {
+    let str1: &str = r#"a${3$"foo####\" bar\"":3$"test",3$"hi":4$100500,3$"date":7$2023-08-01T14:32:01.624Z,3$"myFn":9$function my_fn(a, b) {
         return a + b;
     }$,3$"undefined":0$,3$"nan":6$,3$"null":1$}"#;
 

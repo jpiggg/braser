@@ -11,6 +11,7 @@ lazy_static! {
 		("LT", "listing_terminator"),
 		("UN", "undefined"),
 		("NL", "null"),
+		("IN", "infinity"),
 		("BO", "boolean"),
 		("ST", "string"),
 		("NU", "number"),
@@ -21,8 +22,7 @@ lazy_static! {
 	]);
 }
 
-
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 #[allow(dead_code)]
 pub struct Token<'a> {
     pub name: &'a str,

@@ -12,16 +12,16 @@ pub fn is_sign(char: Option<char>) -> bool {
     }
 }
 
-pub fn is_exp(char: Option<char>) -> bool {
+pub fn is_point(char: Option<char>) -> bool {
     match char {
-        Some(char) => char == 'e' || char == 'E',
+        Some (char) => char == '.',
         None => false
     }
 }
 
-pub fn is_single_quote(char: Option<char>) -> bool {
+pub fn is_exp(char: Option<char>) -> bool {
     match char {
-        Some(char) => char == '\'',
+        Some(char) => char == 'e' || char == 'E',
         None => false
     }
 }

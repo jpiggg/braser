@@ -3,7 +3,7 @@ pub mod helpers;
 
 use std::fmt;
 use std::collections::HashMap;
-use helpers::{is_double_quote, is_single_quote, is_digit, is_sign, is_exp};
+use helpers::{is_double_quote, is_digit, is_sign, is_point, is_exp};
 use crate::shared::tokens::{TOKEN_TYPES, Token};
 
 const TOKEN_NAME: &'static str = "TOKEN_NAME";
@@ -24,7 +24,6 @@ impl fmt::Display for Char {
 }
 
 pub fn accumulate_string(char: Char) -> bool {
-    println!("{}", char);
     if char.prev_char.unwrap() != '$' && is_double_quote(Some(char.cur_char)) && char.prev_char.unwrap() != '\\' {
         return true;
     }
@@ -41,20 +40,27 @@ pub fn accumulate_date(char: Char) -> bool {
 
     false
 }
+
+// is_point(Some(char.cur_char)) && !is_digit(char.next_char)
 pub fn accumulate_number(char: Char) -> bool {
-    if is_digit(Some(char.cur_char)) || 
-        is_sign(Some(char.cur_char)) && is_digit(char.next_char) ||
-        char.cur_char == '.' && is_digit(char.next_char) ||
-        char.cur_char == '.' && is_digit(char.prev_char) ||
-        is_exp(Some(char.cur_char)) && is_sign(char.next_char) {
-        return false;
+    if  !is_digit(char.next_char) && !is_point(char.next_char) && !is_sign(char.next_char) && !is_exp(char.next_char) {
+        return true;
     }
 
-    true
+    false
 }
 
 pub fn accumulate_boolean(char: Char) -> bool {
     if char.cur_char == '1' || char.cur_char == '0' {
+        return true;
+    }
+
+    false
+}
+
+pub fn accumulate_infinity(char: Char) -> bool {
+    println!("accumulate_infinity, {}", char);
+    if char.cur_char == '1' {
         return true;
     }
 
@@ -69,13 +75,22 @@ pub fn accumulate_function(char: Char) -> bool {
     false
 }
 
-
 #[derive(Copy, Clone, Debug)]
-pub struct Ctx<'a> (&'static str, &'a str, &'a str, Option<&'a str>);
+pub struct Ctx<'a> {
+    token_status: &'static str,
+    token_name: &'a str,
+    token_value: &'a str,
+    token_type: Option<&'a str>
+}
 
 impl<'a> Ctx<'a> {
-    fn new () -> Self {
-        Ctx (TOKEN_NAME, "", "", None)
+    fn new() -> Self {
+        Ctx {
+            token_status: TOKEN_NAME,
+            token_name: "",
+            token_value: "",
+            token_type: None
+        }
     }
 }
 
@@ -108,6 +123,7 @@ pub fn run(source: &str) -> Vec<Token>{
             "date" => true,
             "number" => true,
             "bigint" => true,
+            "infinity" => true,
             "boolean" => true,
             "function" => true,
             _ => false
@@ -120,11 +136,10 @@ pub fn run(source: &str) -> Vec<Token>{
         let char: Char = Char {
             prev_char: if i > 0 { Some(chars[&i - 1]) } else { None },
             cur_char: chars[i],
-            next_char: if i < chars.len() - 2 {Some(chars[&i + 1])} else { None }
+            next_char: if i < chars.len() - 1 {Some(chars[&i + 1])} else { None }
         };
 
-
-        match ctx.0 {
+        match ctx.token_status {
             "TOKEN_NAME" => {
                 let mut name: Option<&&str> = tokens.get(&char.cur_char.to_string() as &str);
 
@@ -136,14 +151,14 @@ pub fn run(source: &str) -> Vec<Token>{
                 if name != None {
                     let token_type = TOKEN_TYPES.get(*name.clone().unwrap());
 
-                    ctx.1 = name.unwrap();
-                    ctx.3 = Some(*token_type.unwrap());
+                    ctx.token_name = name.unwrap();
+                    ctx.token_type = Some(*token_type.unwrap());
                     
-
                     if !should_create_token_value(token_type.unwrap()) {
-                        res.push(Token { name: ctx.1, value: ctx.2 });
+                        res.push(Token { name: ctx.token_name, value: ctx.token_value });
+                        ctx = Ctx::new();
                     } else {
-                        ctx.0 = TOKEN_VALUE;
+                        ctx.token_status = TOKEN_VALUE;
                     }
 
                     continue;
@@ -158,13 +173,13 @@ pub fn run(source: &str) -> Vec<Token>{
                 let mut b = [0; 8];
 
                 let buffer_char = char.cur_char.encode_utf8(&mut b);
-                let together = format!("{}{}", ctx.2, buffer_char);
+                let together = format!("{}{}", ctx.token_value, buffer_char);
 
-                ctx.2 = Box::leak(together.into_boxed_str());
+                ctx.token_value = Box::leak(together.into_boxed_str());
 
                 let mut is_finished: bool = false;
 
-                match ctx.3 {
+                match ctx.token_type {
                     Some("string") => {
                         is_finished = accumulate_string(char);
                     },
@@ -176,6 +191,9 @@ pub fn run(source: &str) -> Vec<Token>{
                     },
                     Some("bigint") => {
                         is_finished = accumulate_number(char);
+                    },
+                    Some("infinity") => {
+                        is_finished = accumulate_infinity(char);
                     },
                     Some("boolean") => {
                         is_finished = accumulate_boolean(char);
@@ -189,16 +207,14 @@ pub fn run(source: &str) -> Vec<Token>{
 
 
                 if is_finished == true {
-                    res.push(Token { name: ctx.1, value: ctx.2 });
+                    res.push(Token { name: ctx.token_name, value: ctx.token_value });
 
                     ctx = Ctx::new();
                 }
             },
-            _ => println!("There is no accumulators for specific token type {}", ctx.3.unwrap()),
+            _ => println!("There is no accumulators for specific token type {}", ctx.token_type.unwrap()),
         }
     }
-
-    println!("RES VARIABLE IS {:?}", res);
 
     res
 }
