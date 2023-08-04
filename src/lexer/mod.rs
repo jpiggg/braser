@@ -19,12 +19,12 @@ pub struct Char {
 
 impl fmt::Display for Char {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Char consists from: \nprev_char: {}, \nchar: {}, \nnext_char: {}", self.prev_char.unwrap(), self.cur_char, self.next_char.unwrap_or_default())
+        writeln!(f, "Char consists from: \nprev_char: {}, \nchar: {}, \nnext_char: {}", self.prev_char.unwrap_or_default(), self.cur_char, self.next_char.unwrap_or_default())
     }
 }
 
 pub fn accumulate_string(char: Char) -> bool {
-    if char.prev_char.unwrap() != '$' && is_double_quote(Some(char.cur_char)) && char.prev_char.unwrap() != '\\' {
+    if char.prev_char.unwrap() != '$' && is_double_quote(Some(char.cur_char)) && char.prev_char.unwrap_or_default() != '\\' {
         return true;
     }
 
@@ -41,7 +41,6 @@ pub fn accumulate_date(char: Char) -> bool {
     false
 }
 
-// is_point(Some(char.cur_char)) && !is_digit(char.next_char)
 pub fn accumulate_number(char: Char) -> bool {
     if  !is_digit(char.next_char) && !is_point(char.next_char) && !is_sign(char.next_char) && !is_exp(char.next_char) {
         return true;
@@ -68,7 +67,7 @@ pub fn accumulate_infinity(char: Char) -> bool {
 }
 
 pub fn accumulate_function(char: Char) -> bool {
-    if char.cur_char == '}' && char.next_char.unwrap() == '$' {
+    if char.cur_char == '}' && char.next_char.unwrap_or_default() == '$' {
         return true;
     }
 
@@ -80,7 +79,7 @@ pub struct Ctx<'a> {
     token_status: &'static str,
     token_name: &'a str,
     token_value: &'a str,
-    token_type: Option<&'a str>
+    token_type: &'a str
 }
 
 impl<'a> Ctx<'a> {
@@ -89,7 +88,7 @@ impl<'a> Ctx<'a> {
             token_status: TOKEN_NAME,
             token_name: "",
             token_value: "",
-            token_type: None
+            token_type: ""
         }
     }
 }
@@ -144,17 +143,18 @@ pub fn run(source: &str) -> Vec<Token>{
                 let mut name: Option<&&str> = tokens.get(&char.cur_char.to_string() as &str);
 
                 if char.prev_char != None && name == None {
-                    let pair = &(char.prev_char.unwrap().to_string() + &char.cur_char.to_string() ) as &str;
+                    let pair = &(char.prev_char.expect("The prev char should not be None").to_string() + &char.cur_char.to_string() ) as &str;
                     name = tokens.get(pair);
                 }
 
                 if name != None {
-                    let token_type = TOKEN_TYPES.get(*name.clone().unwrap());
+                    ctx.token_name = name.expect("The token's name should exist");
 
-                    ctx.token_name = name.unwrap();
-                    ctx.token_type = Some(*token_type.unwrap());
+                    let token_type = TOKEN_TYPES.get(ctx.token_name).unwrap_or_else(|| panic!("There is no token type found for token {}", ctx.token_name));
+
+                    ctx.token_type = *token_type;
                     
-                    if !should_create_token_value(token_type.unwrap()) {
+                    if !should_create_token_value(token_type) {
                         res.push(Token { name: ctx.token_name, value: ctx.token_value });
                         ctx = Ctx::new();
                     } else {
@@ -180,31 +180,29 @@ pub fn run(source: &str) -> Vec<Token>{
                 let mut is_finished: bool = false;
 
                 match ctx.token_type {
-                    Some("string") => {
+                    "string" => {
                         is_finished = accumulate_string(char);
                     },
-                    Some("date") => {
+                    "date" => {
                         is_finished = accumulate_date(char);
                     },
-                    Some("number") => {
+                    "number" => {
                         is_finished = accumulate_number(char);
                     },
-                    Some("bigint") => {
+                    "bigint" => {
                         is_finished = accumulate_number(char);
                     },
-                    Some("infinity") => {
+                    "infinity" => {
                         is_finished = accumulate_infinity(char);
                     },
-                    Some("boolean") => {
+                    "boolean" => {
                         is_finished = accumulate_boolean(char);
                     },
-                    Some("function") => {
+                    "function" => {
                         is_finished = accumulate_function(char);
                     },
-                    None => println!("There is no token types provided"),
-                    _ => println!("The default behavior")
+                    _ => panic!("There is no accumulator for specific token type {}", ctx.token_type)
                 }
-
 
                 if is_finished == true {
                     res.push(Token { name: ctx.token_name, value: ctx.token_value });
@@ -212,7 +210,7 @@ pub fn run(source: &str) -> Vec<Token>{
                     ctx = Ctx::new();
                 }
             },
-            _ => println!("There is no accumulators for specific token type {}", ctx.token_type.unwrap()),
+            _ => panic!("There is an unsknown token status {}", ctx.token_status),
         }
     }
 
