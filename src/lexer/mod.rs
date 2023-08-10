@@ -3,6 +3,7 @@ pub mod helpers;
 
 use std::fmt;
 use std::collections::HashMap;
+use wasm_bindgen::prelude::*;
 use helpers::{is_double_quote, is_digit, is_sign, is_point, is_exp};
 use crate::shared::tokens::{TOKEN_TYPES, Token};
 
