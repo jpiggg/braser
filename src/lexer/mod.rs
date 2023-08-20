@@ -3,7 +3,6 @@ pub mod helpers;
 
 use std::fmt;
 use std::collections::HashMap;
-use wasm_bindgen::prelude::*;
 use helpers::{is_double_quote, is_digit, is_sign, is_point, is_exp};
 use crate::shared::tokens::{TOKEN_TYPES, Token};
 
@@ -156,7 +155,7 @@ pub fn run(source: &str) -> Vec<Token>{
                     ctx.token_type = *token_type;
                     
                     if !should_create_token_value(token_type) {
-                        res.push(Token { name: ctx.token_name, value: ctx.token_value });
+                        res.push(Token { name: ctx.token_name.to_string(), value: ctx.token_value.to_string() });
                         ctx = Ctx::new();
                     } else {
                         ctx.token_status = TOKEN_VALUE;
@@ -206,7 +205,7 @@ pub fn run(source: &str) -> Vec<Token>{
                 }
 
                 if is_finished == true {
-                    res.push(Token { name: ctx.token_name, value: ctx.token_value });
+                    res.push(Token { name: ctx.token_name.to_string(), value: ctx.token_value.to_string() });
 
                     ctx = Ctx::new();
                 }

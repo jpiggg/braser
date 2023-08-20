@@ -22,9 +22,9 @@ lazy_static! {
 	]);
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 #[allow(dead_code)]
-pub struct Token<'a> {
-    pub name: &'a str,
-    pub value: &'a str
+pub struct Token {
+    pub name: String,
+    pub value: String
 }

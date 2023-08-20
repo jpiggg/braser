@@ -13,7 +13,7 @@ fn is_valid_object_key(token_type: &str) -> bool {
 	}
 }
 
-fn is_key_pair(token_slice: &[Token<'_>]) -> bool {
+fn is_key_pair(token_slice: &[Token]) -> bool {
 	if token_slice[0].name != "KT" && token_slice[1].name == "KT" {
 		return true;
 	}
@@ -21,12 +21,12 @@ fn is_key_pair(token_slice: &[Token<'_>]) -> bool {
 	false
 }
 
-fn create_object<'a>( mut root_node: Node<'a>, tokens: &'a [Token<'a>]) ->( Node<'a>, &'a [Token<'a>]) {
+fn create_object<'a>( mut root_node: Node, tokens: &'a [Token]) ->( Node, &'a [Token]) {
 	if tokens.len() == 0 {
 		return (root_node, tokens);
 	}
 
-	let token_type = TOKEN_TYPES.get(&tokens[0].name).unwrap();
+	let token_type = TOKEN_TYPES.get(&tokens[0].name.as_str()).unwrap();
 
 	if *token_type == "objectEnd" {
 		return (root_node, &tokens[1..tokens.len()]);
@@ -36,19 +36,19 @@ fn create_object<'a>( mut root_node: Node<'a>, tokens: &'a [Token<'a>]) ->( Node
         Error::new("Invalid key pair value");
     }
 
-	if !is_valid_object_key(TOKEN_TYPES.get(&tokens[0].name).unwrap()) {
+	if !is_valid_object_key(TOKEN_TYPES.get(&tokens[0].name.as_str()).unwrap()) {
 		Error::new("Invalid object key type");
 	}
 
     let (new_node, rest) = create_node (Node {
-        kind: "pair",
-        value: tokens[0].value,
+        kind: String::from("pair"),
+        value: tokens[0].value.clone(),
         children: vec![]
     }, &tokens[2..tokens.len()]);
 
     root_node.children.push(new_node);
     
-    let token_type_2 = TOKEN_TYPES.get(&rest[0].name).unwrap();
+    let token_type_2 = TOKEN_TYPES.get(&rest[0].name.as_str()).unwrap();
 
     if *token_type_2 == "objectEnd" {
         return (root_node, &rest[1..rest.len()]);
@@ -58,12 +58,12 @@ fn create_object<'a>( mut root_node: Node<'a>, tokens: &'a [Token<'a>]) ->( Node
 
 }
 
-fn create_array<'a>(root_node: Node<'a>, tokens: &'a [Token<'a>]) -> ( Node<'a>, &'a [Token<'a>]) {
+fn create_array(root_node: Node, tokens: &[Token]) -> ( Node, &[Token]) {
 	if tokens.len() == 0 {
 		return (root_node, &tokens[1..(tokens.len())]);
 	}
 
-	let token_type = TOKEN_TYPES.get(&tokens[0].name).unwrap();
+	let token_type = TOKEN_TYPES.get(&tokens[0].name.as_str()).unwrap();
 
 	if *token_type == "arrayEnd" {
 		return (root_node, &tokens[1..tokens.len()]);
@@ -72,7 +72,7 @@ fn create_array<'a>(root_node: Node<'a>, tokens: &'a [Token<'a>]) -> ( Node<'a>,
 
 	let (new_node, rest) = create_node( root_node.clone(), tokens);
 
-	let token_type_2 = TOKEN_TYPES.get(&rest[0].name).unwrap();
+	let token_type_2 = TOKEN_TYPES.get(&rest[0].name.as_str()).unwrap();
 
     if *token_type_2 == "arrayEnd" {
         return (new_node, &rest[1..rest.len()]);
@@ -81,14 +81,14 @@ fn create_array<'a>(root_node: Node<'a>, tokens: &'a [Token<'a>]) -> ( Node<'a>,
     }
 }
 
-fn create_node<'a>(mut node: Node<'a>, mut tokens: &'a [Token<'a>]) -> (Node<'a>, &'a [Token<'a>]){
-	let token_type = TOKEN_TYPES.get(&tokens[0].name).unwrap();
+fn create_node(mut node: Node, mut tokens: &[Token]) -> (Node, &[Token]){
+	let token_type = TOKEN_TYPES.get(&tokens[0].name.as_str()).unwrap();
 
 	match *token_type {
 		"objectStart" => {
 			let root_node = Node {
-				kind: "object",
-				value: "",
+				kind: String::from("object"),
+				value: String::from(""),
 				children: vec![]
 			};
 
@@ -99,8 +99,8 @@ fn create_node<'a>(mut node: Node<'a>, mut tokens: &'a [Token<'a>]) -> (Node<'a>
 		},
 		"arrayStart" => {
 			let (new_node, rest) = create_array( Node {
-				kind: "array",
-				value: "",
+				kind: String::from("array"),
+				value: String::from(""),
 				children: vec![]
 			}, &tokens[1..(tokens.len())]);
 
@@ -109,8 +109,8 @@ fn create_node<'a>(mut node: Node<'a>, mut tokens: &'a [Token<'a>]) -> (Node<'a>
 		},
 		_ => {
 			node.children.push(Node {
-				kind: token_type,
-				value: tokens[0].value,
+				kind: token_type.to_string(),
+				value: tokens[0].value.clone(),
 				children: vec![]
 			});
 
@@ -121,7 +121,7 @@ fn create_node<'a>(mut node: Node<'a>, mut tokens: &'a [Token<'a>]) -> (Node<'a>
 	(node, tokens)
 }
 
-pub fn run<'a>(root: Node<'a>, tokens: &'a [Token<'a>]) -> Node<'a> {
+pub fn run(root: Node, tokens: &[Token]) -> Node {
 	if tokens.len() == 0 {
 		return root;
 	}
