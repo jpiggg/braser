@@ -4,4 +4,4 @@ pub mod lexer;
 pub mod parser;
 
 #[cfg(test)]
-pub mod e2e;
+pub mod compiler;

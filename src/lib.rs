@@ -19,7 +19,7 @@ pub fn decode(source: &str) -> Vec<wasm_bindgen::JsValue> {
         children: vec![]
     }, &lexems);
 
-    let result: Vec<wasm_bindgen::JsValue> = compiler(&vec![nodes_tree]);
+    let result: Vec<wasm_bindgen::JsValue> = compiler(&nodes_tree.children);
 
     result
 }
