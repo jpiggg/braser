@@ -7,8 +7,8 @@ pub fn to_object(pairs: &Vec<Node>) -> js_sys::Object {
     let object = js_sys::Object::new();
 
     for pair in pairs.iter() {
-        let str: js_sys::JsString = js_sys::JsString::from(pair.value.as_str()).into();
-       let key = str.substr(1, (str.length() - 2).try_into().unwrap()).into();
+        let str = pair.value.as_str();
+        let key: js_sys::JsString = js_sys::JsString::from(&str[1..str.len() - 1]).into();
         let _ = js_sys::Reflect::set(&object, &key, &run(pair.children.first().unwrap()));
     }
 
@@ -34,8 +34,8 @@ pub fn run(node: &Node) -> JsValue {
             to_array(&node.children).into()
         },
         "string" => {
-            let str = js_sys::JsString::from(node.value.as_str());
-            str.substr(1, (str.length() - 2).try_into().unwrap()).into()
+            let str = node.value.as_str();
+            js_sys::JsString::from(&str[1..str.len() - 1]).into()
         },
         "number" => {
             js_sys::Number::from_str(node.value.as_str()).unwrap().into()
