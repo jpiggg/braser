@@ -14,5 +14,6 @@ fn test() {
     let obj: JsValue = js_sys::Reflect::get(res.first().unwrap(), &js_sys::JsString::from("\"foo\"")).unwrap();
     let result = js_sys::Reflect::get(&obj, &js_sys::JsString::from("\"hello\"")).unwrap();
     let expected: JsValue = js_sys::JsString::from("\"world\"").into();
+
     assert_eq!(result, expected);
 }
