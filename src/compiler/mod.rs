@@ -54,9 +54,6 @@ pub fn run(node: &Node) -> JsValue {
         "null" => {
             JsValue::null()
         },
-        "undefined" => {
-            JsValue::undefined()
-        },
         "nan" => {
             JsValue::from(f64::NAN)
         }
@@ -67,10 +64,10 @@ pub fn run(node: &Node) -> JsValue {
             JsValue::as_bool(&js_sys::JsString::from(node.value.as_str())).into()
         },
         "function" => {
-            js_sys::eval(&node.value[1..node.value.len() - 1]).unwrap()
+            js_sys::eval(&node.value.as_str()[1..node.value.len()]).unwrap()
         },
         _ => {
-            panic!("There is no trasformers for specified node kind {:?}", node.kind.as_str());
+            JsValue::undefined()
         }
     };
 
