@@ -38,13 +38,14 @@ pub fn run(node: &Node) -> JsValue {
             js_sys::JsString::from(&str[1..str.len() - 1]).into()
         },
         "number" => {
-            js_sys::Number::from_str(node.value.as_str()).unwrap().into()
+            let val: f64 = node.value.as_str().parse().unwrap();
+            js_sys::Number::from(val).into()
         },
         "bigint" => {
             js_sys::BigInt::from_str(&node.value.as_str()).unwrap().into()
         },
         "infinity" => {
-            if node.value.as_str() == "-" {
+            if node.value.as_str() == "-1" {
                 js_sys::Number::NEGATIVE_INFINITY.into()
             } else {
                 js_sys::Number::POSITIVE_INFINITY.into()
@@ -65,7 +66,9 @@ pub fn run(node: &Node) -> JsValue {
         "boolean" => {
             JsValue::as_bool(&js_sys::JsString::from(node.value.as_str())).into()
         },
-        // "function" => {},
+        "function" => {
+            js_sys::eval(&node.value[1..node.value.len() - 1]).unwrap()
+        },
         _ => {
             panic!("There is no trasformers for specified node kind {:?}", node.kind.as_str());
         }
