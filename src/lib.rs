@@ -7,11 +7,14 @@ pub mod tests;
 use crate::lexer::run as lexer;
 use crate::parser::run as parser;
 use crate::compiler::run as compiler;
+use js_sys::JsString;
+use wasm_bindgen::prelude::*;
 
 use crate::shared::Node;
 
-pub fn decode(source: &str) -> Vec<wasm_bindgen::JsValue> {
-    let lexems = lexer(source);
+#[wasm_bindgen]
+pub fn decode(source: JsString) -> wasm_bindgen::JsValue {
+    let lexems = lexer(&source.as_string().unwrap());
 
     let nodes_tree = parser(Node {
         kind: String::from("root"),
@@ -19,7 +22,7 @@ pub fn decode(source: &str) -> Vec<wasm_bindgen::JsValue> {
         children: vec![]
     }, &lexems);
 
-    let result: Vec<wasm_bindgen::JsValue> = compiler(&nodes_tree.children);
+    let result: wasm_bindgen::JsValue = compiler(nodes_tree.children.first().unwrap());
 
     result
 }
