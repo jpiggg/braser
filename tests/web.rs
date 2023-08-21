@@ -8,7 +8,7 @@ wasm_bindgen_test_configure!(run_in_browser);
 
 #[cfg(test)]
 #[wasm_bindgen_test]
-fn test() {
+fn nested_object() {
     let src: &str = r#"a${3$"foo":a${3$"hello":3$"world"}}"#;
 
     let string = js_sys::JsString::from(src);
