@@ -64,7 +64,7 @@ pub fn run(node: &Node) -> JsValue {
             JsValue::as_bool(&js_sys::JsString::from(node.value.as_str())).into()
         },
         "function" => {
-            js_sys::eval(&node.value.as_str()[1..node.value.len()]).unwrap()
+            js_sys::eval(node.value.as_str()).unwrap()
         },
         _ => {
             JsValue::undefined()

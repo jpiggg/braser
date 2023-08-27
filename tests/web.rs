@@ -2,7 +2,7 @@ use wasm_bindgen_test::wasm_bindgen_test_configure;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_test::*;
 use js_sys;
-use stringify::decode;
+use stringify::decode::*;
 
 wasm_bindgen_test_configure!(run_in_browser);
 

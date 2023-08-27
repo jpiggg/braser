@@ -58,7 +58,6 @@ pub fn accumulate_boolean(char: Char) -> bool {
 }
 
 pub fn accumulate_infinity(char: Char) -> bool {
-    println!("accumulate_infinity, {}", char);
     if char.cur_char == '1' {
         return true;
     }

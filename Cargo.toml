@@ -13,6 +13,7 @@ wasm-bindgen = "0.2.84"
 num = "0.4"
 lazy_static = "1.4.0"
 js-sys = "0.3.52"
+regex = "1.9.3"
 [dev-dependencies]
 pretty_assertions = "1"
 wasm-bindgen-test = "0.3.0"
