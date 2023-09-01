@@ -1,12 +1,12 @@
 use pretty_assertions::assert_eq;
-use crate::lexer::run as lexer;
+use crate::decode::lexer::run as lexer;
 use crate::shared::tokens::Token;
 
 #[test]
 fn test_flatten_object() {
-    let src: &str = r#"a${3$"foo####\" bar\"":3$"test",3$"hi":4$100500,3$"date":7$2023-08-01T14:32:01.624Z,3$"myFn":9$function my_fn(a, b) {
+    let src: &str = r#"a${3$"foo####\" bar\"":3$"test",3$"hi":4$100500,3$"date":7$2023-08-01T14:32:01.624Z,3$"myFn":9$[name=my_fn] function my_fn(a, b) {
         return a + b;
-    }$,3$"undefined":0$,3$"nan":6$,3$"null":1$}"#;
+    }$,3$"undefined": 0$,3$"nan":6$,3$"null":1$}"#;
     let tokens = lexer(src);
     let expected = vec![
         Token { name: String::from("OS"), value: String::from("" )},
@@ -24,7 +24,7 @@ fn test_flatten_object() {
         Token { name: String::from("LT"), value: String::from("" )},
         Token { name: String::from("ST"), value: String::from("\"myFn\"" )},
         Token { name: String::from("KT"), value: String::from("" )},
-        Token { name: String::from("FU"), value: String::from("function my_fn(a, b) {\n        return a + b;\n    }" )},
+        Token { name: String::from("FU"), value: String::from("[name=my_fn] function my_fn(a, b) {\n        return a + b;\n    }" )},
         Token { name: String::from("LT"), value: String::from("") }, 
         Token { name: String::from("ST"), value: String::from("\"undefined\"" )},
         Token { name: String::from("KT"), value: String::from("" )},
@@ -300,14 +300,14 @@ fn test_date() {
 
 #[test]
 fn test_functions() {
-    let src: &str = r#"a${3$"foo":9$function () { return URL + '/movies'; }$,3$"bar":9$function test(fn) {
+    let src: &str = r#"a${3$"foo":9$[name=test] function test() { return URL + '/movies'; }$,3$"bar":9$[name=test] function test(fn) {
         if (typeof fn === "function") {
             return true;
         }
         return false;
-    }$,3$"myFn":9$function my_fn(a, b) {
+    }$,3$"myFn":9$[name=my_fn] function my_fn(a, b) {
         return a + b;
-    }$,3$"closure":9$function (isLoading) {
+    }$,3$"closure":9$[name=closure] function (isLoading) {
         var foo = "bar";
         return function (testParam) {
             console.log(isLoading, foo, testParam);
@@ -318,19 +318,19 @@ fn test_functions() {
         Token{name: String::from("OS"), value: String::from("")},
         Token{name: String::from("ST"), value: String::from("\"foo\"")},
         Token{name: String::from("KT"), value: String::from("")},
-        Token{name: String::from("FU"), value: String::from("function () { return URL + '/movies'; }")},
+        Token{name: String::from("FU"), value: String::from("[name=test] function test() { return URL + '/movies'; }")},
         Token{name: String::from("LT"), value: String::from("")},
         Token{name: String::from("ST"), value: String::from("\"bar\"")},
         Token{name: String::from("KT"), value: String::from("")},
-        Token{name: String::from("FU"), value: String::from("function test(fn) {\n        if (typeof fn === \"function\") {\n            return true;\n        }\n        return false;\n    }")},
+        Token{name: String::from("FU"), value: String::from("[name=test] function test(fn) {\n        if (typeof fn === \"function\") {\n            return true;\n        }\n        return false;\n    }")},
         Token{name: String::from("LT"), value: String::from("")},
         Token{name: String::from("ST"), value: String::from("\"myFn\"" )},
         Token{name: String::from("KT"), value: String::from("")},
-        Token{name: String::from("FU"), value: String::from("function my_fn(a, b) {\n        return a + b;\n    }")},
+        Token{name: String::from("FU"), value: String::from("[name=my_fn] function my_fn(a, b) {\n        return a + b;\n    }")},
         Token{name: String::from("LT"), value: String::from("")},
         Token{name: String::from("ST"), value: String::from("\"closure\"")},
         Token{name: String::from("KT"), value: String::from("")},
-        Token{name: String::from("FU"), value: String::from("function (isLoading) {\n        var foo = \"bar\";\n        return function (testParam) {\n            console.log(isLoading, foo, testParam);\n        };\n    }")}, 
+        Token{name: String::from("FU"), value: String::from("[name=closure] function (isLoading) {\n        var foo = \"bar\";\n        return function (testParam) {\n            console.log(isLoading, foo, testParam);\n        };\n    }")}, 
         Token{name: String::from("OE"), value: String::from("")}
     ];
 

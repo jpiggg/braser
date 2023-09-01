@@ -1,5 +1,8 @@
 pub mod errors;
 
+extern crate regex;
+
+use regex::RegexBuilder;
 use self::errors::Error;
 use crate::shared::tokens::{TOKEN_TYPES, Token};
 use crate::shared::Node;
@@ -106,6 +109,21 @@ fn create_node(mut node: Node, mut tokens: &[Token]) -> (Node, &[Token]){
 
 			node.children.push(new_node);
 			tokens = rest;
+		},
+		"function" => {
+			let re = RegexBuilder::new(r"\[name=([^\]]+)+\](.*)").multi_line(false).crlf(false).build().unwrap();
+			let test = re.replace(&tokens[0].value.as_str(), "$2");
+
+			let res = re.captures(&tokens[0].value.as_str()).unwrap();
+			let fn_name = res.get(1).unwrap().as_str();
+			
+			node.children.push(Node {
+				kind: token_type.to_string(),
+				value: "var ".to_string() + fn_name + " =" + &test + "; " + fn_name,
+				children: vec![]
+			});
+
+			tokens = &tokens[1..(tokens.len())]
 		},
 		_ => {
 			node.children.push(Node {

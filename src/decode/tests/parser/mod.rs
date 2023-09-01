@@ -1,5 +1,5 @@
 use pretty_assertions::assert_eq;
-use crate::parser::run as parser;
+use crate::decode::parser::run as parser;
 use crate::shared::{tokens::Token, Node};
 
 #[test]
@@ -20,7 +20,7 @@ fn test_flatten_object() {
         Token { name: String::from("LT"), value: String::from("") },
         Token { name: String::from("ST"), value: String::from("\"myFn\"") },
         Token { name: String::from("KT"), value: String::from("") },
-        Token { name: String::from("FU"), value: String::from("function my_fn(a, b) {\n        return a + b;\n    }") },
+        Token { name: String::from("FU"), value: String::from("[name=my_fn] function my_fn(a, b) {\n        return a + b;\n    }") },
         Token { name: String::from("LT"), value: String::from("") }, 
         Token { name: String::from("ST"), value: String::from("\"undefined\"") },
         Token { name: String::from("KT"), value: String::from("") },
@@ -88,7 +88,7 @@ fn test_flatten_object() {
                         children: vec![
                             Node {
                                 kind: String::from("function"),
-                                value: String::from("function my_fn(a, b) {\n        return a + b;\n    }"),
+                                value: String::from("var my_fn = function my_fn(a, b) {\n        return a + b;\n    } my_fn"),
                                 children: vec![],
                             },
                         ],
