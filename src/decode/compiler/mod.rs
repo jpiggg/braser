@@ -42,7 +42,8 @@ pub fn run(node: &Node) -> JsValue {
             js_sys::Number::from(val).into()
         },
         "bigint" => {
-            js_sys::BigInt::from_str(&node.value.as_str()).unwrap().into()
+            let val: i64 =  node.value.as_str().parse().unwrap();
+            js_sys::BigInt::from(val).into()
         },
         "infinity" => {
             if node.value.as_str() == "-1" {
