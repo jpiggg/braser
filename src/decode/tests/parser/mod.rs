@@ -88,7 +88,7 @@ fn test_flatten_object() {
                         children: vec![
                             Node {
                                 kind: String::from("function"),
-                                value: String::from("var my_fn = function my_fn(a, b) {\n        return a + b;\n    } my_fn"),
+                                value: String::from("var my_fn = function my_fn(a, b) {\n        return a + b;\n    }; my_fn"),
                                 children: vec![],
                             },
                         ],
