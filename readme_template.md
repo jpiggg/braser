@@ -6,3 +6,14 @@
 4. Use cases
 
 
+braser - It is a quick serializer/deserializer written in Rust! 
+
+## Quick start
+
+## Supported types
+
+## Motivation
+
+## Use cases
+
+## Human-readable errors

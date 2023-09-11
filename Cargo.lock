@@ -18,6 +18,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
+name = "braser"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "lazy_static",
+ "num",
+ "pretty_assertions",
+ "regex",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -216,19 +229,6 @@ name = "scoped-tls"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e1cf6437eb19a8f4a6cc0f7dca544973b0b78843adbfeb3683d1a94a0024a294"
-
-[[package]]
-name = "stringify"
-version = "0.1.0"
-dependencies = [
- "js-sys",
- "lazy_static",
- "num",
- "pretty_assertions",
- "regex",
- "wasm-bindgen",
- "wasm-bindgen-test",
-]
 
 [[package]]
 name = "syn"
