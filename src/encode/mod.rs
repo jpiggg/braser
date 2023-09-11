@@ -17,20 +17,10 @@ fn is_date(val: &JsValue) -> bool {
     is_date && !is_invalid_date_string && !is_nan
 }
 
+
 #[wasm_bindgen]
 pub fn encode(source: JsValue) -> js_sys::JsString {
     return match &source {
-       source if JsValue::is_object(&source) => {
-            let token = TOKENS.get("objectstart").unwrap();
-            from_object(&source);
-
-            js_sys::JsString::from("")
-       },
-       source if JsValue::is_array(&source) => {
-            let token = TOKENS.get("arraystart").unwrap().to_owned();
-
-            js_sys::JsString::from("")
-       },
        source if JsValue::is_string(&source) => {
             let token: String = TOKENS.get("string").unwrap().to_owned();
             let val: String = js_sys::JSON::stringify(&source).unwrap().into();
@@ -84,6 +74,37 @@ pub fn encode(source: JsValue) -> js_sys::JsString {
         
             js_sys::JsString::from(token.to_owned() + val.as_str())
        },
+        source if JsValue::is_array(&source) => {
+                let token = TOKENS.get("arraystart").unwrap().to_owned();
+                let js_array: Vec<JsValue> = js_sys::Array::from(source).to_vec();
+                let mut result: String = String::from("");
+
+                for val in js_array.iter() {
+                    result += &encode(val.clone()).as_string().unwrap();
+                    result += ",";
+                }
+
+                js_sys::JsString::from(token.to_owned() + result.as_str())
+        },
+        source if JsValue::is_object(&source) => {
+            let token = TOKENS.get("objectstart").unwrap().to_owned();
+
+            let js_obj: js_sys::Object = source.as_ref().clone().unchecked_into();
+            let js_obj_keys: Vec<JsValue> = js_sys::Object::keys(&js_obj).to_vec();
+            let mut result: Vec<String> = vec![];
+
+            for key in js_obj_keys.iter() {
+                let obj_val = js_sys::Reflect::get(&js_obj, key).unwrap();
+
+                let value: String = encode(key.clone()).as_string().unwrap().to_owned() + ":" + encode(obj_val).as_string().unwrap().to_owned().as_str();
+                
+                result.push(value);
+            }
+
+            let val: String = result.join(",");
+    
+            js_sys::JsString::from(token + "{" + &val + "}")
+        },
        _ => {
             js_sys::JSON::stringify(&source).unwrap()
        }
