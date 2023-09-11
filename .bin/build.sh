@@ -22,7 +22,7 @@ if [ -d "pkg-bundler" ]; then
 fi
 
 
-# Build for both targets
+# Build for all targets
 wasm-pack build -t web -d pkg && \
 wasm-pack build -t bundler -d pkg-bundler && \
 wasm-pack build -t nodejs -d pkg-node
@@ -30,7 +30,7 @@ wasm-pack build -t nodejs -d pkg-node
 # Get the package name
 PKG_NAME=$(jq -r .name pkg/package.json | sed 's/\-/_/g')
 
-# Merge nodejs & browser packages
+# Merge nodejs & browser & bundler packages
 cp "pkg-node/${PKG_NAME}.js" "pkg/${PKG_NAME}_main.js"
 sed "s/require[\(]'\.\/${PKG_NAME}/require\('\.\/${PKG_NAME}_main/" "pkg-bundler/${PKG_NAME}_bg.js" > "pkg/${PKG_NAME}_bg.js"
 jq ".files += [\"${PKG_NAME}_bg.js\"]" pkg/package.json \
