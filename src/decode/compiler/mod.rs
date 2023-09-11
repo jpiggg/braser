@@ -1,4 +1,3 @@
-use std::str::FromStr;
 use wasm_bindgen::prelude::*;
 use js_sys;
 use crate::shared::Node;
@@ -42,8 +41,9 @@ pub fn run(node: &Node) -> JsValue {
             js_sys::Number::from(val).into()
         },
         "bigint" => {
-            let val: i64 =  node.value.as_str().parse().unwrap();
-            js_sys::BigInt::from(val).into()
+            // let val: i64 =  node.value.as_str().parse().unwrap();
+            // js_sys::BigInt::from(val).into()
+            JsValue::bigint_from_str(node.value.as_str())
         },
         "infinity" => {
             if node.value.as_str() == "-1" {

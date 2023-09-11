@@ -1,5 +1,22 @@
 use std::collections::HashMap;
-use lazy_static::lazy_static; 
+use lazy_static::lazy_static;
+
+lazy_static! {
+	pub static ref TOKENS: HashMap<&'static str, String> = HashMap::from([
+		("undefined", String::from("0$")),
+		("null", String::from("1$")),
+		("boolean", String::from("2$")),
+		("string", String::from("3$")),
+		("number", String::from("4$")),
+		("infinity", String::from("5$")),
+		("nan", String::from("6$")),
+		("date", String::from("7$")),
+		("bigint", String::from("8$")),
+		("function", String::from("9$")),
+		("objectstart", String::from("a$")),
+		("arraystart", String::from("b$"))
+	]);
+}
 
 lazy_static! {
     pub static ref TOKEN_TYPES: HashMap<&'static str, &'static str> = HashMap::from([
