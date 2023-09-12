@@ -14,7 +14,7 @@ use wasm_bindgen::prelude::*;
 use crate::shared::Node;
 
 #[wasm_bindgen]
-pub fn decode(source: JsString) -> wasm_bindgen::JsValue {
+pub fn decode(source: JsString) -> JsValue {
     let lexems = lexer(&source.as_string().unwrap());
 
     let nodes_tree = parser(Node {
