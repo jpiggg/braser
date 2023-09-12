@@ -135,4 +135,3 @@ br.decode(br.encode({ f: () => 'test' })) // {f: function f()}
 |  |  |
 | -------- | ------- |
 |   <img src="docs/assets/rust.png" alt="rust" width="200" height="200"/>  | <img src="docs/assets/wa.png" alt="web_assembly" width="200" height="200"/> |
-|                     
