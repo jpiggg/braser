@@ -3,9 +3,6 @@ use wasm_bindgen::prelude::*;
 
 use crate::shared::tokens::TOKENS;
 
-pub fn from_object(val: &JsValue) {}
-pub fn from_array() {}
-
 fn is_date(val: &JsValue) -> bool {
     let date: js_sys::Date = val.to_owned().into();
     let ctx: js_sys::Function = js_sys::Reflect::get(&js_sys::Object::get_prototype_of(&js_sys::Object::new()), &js_sys::JsString::from("toString")).unwrap().into();
