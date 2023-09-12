@@ -1,7 +1,7 @@
 ![headline](docs/assets/headline.png)
 
 # Braser
-The fast serializer/deserializer written in Rust! 
+The fast serialiser written in Rust! 
 
 ## Motivation
 
