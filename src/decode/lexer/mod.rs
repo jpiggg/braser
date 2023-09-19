@@ -211,8 +211,6 @@ pub fn run(source: &str) -> Result<Vec<Token>, LexicalError>{
                     _ => panic!("There is no accumulator for specific token type {}", ctx.token_type)
                 }
 
-                println!("--------INDEX-----{} {}", chars.len(), i);
-
                 if is_finished == true {
                     res.push(Token { name: ctx.token_name.to_string(), value: ctx.token_value.to_string(), start: ctx.token_start });
 
@@ -220,6 +218,12 @@ pub fn run(source: &str) -> Result<Vec<Token>, LexicalError>{
                 }
             },
             _ => panic!("There is an unsknown token status {}", ctx.token_status),
+        }
+
+        let is_last = i == (chars.len() - 1);
+
+        if is_last && ctx.token_name != "" {
+            return Err(LexicalError::new("UNEXPECTED_END", char.cur_char, ctx.token_name, i, source.to_owned()));
         }
     }
 
