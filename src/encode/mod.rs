@@ -103,6 +103,7 @@ pub fn encode(source: JsValue) -> js_sys::JsString {
             js_sys::JsString::from(token + "{" + &val + "}")
         },
        _ => {
+          
             js_sys::JSON::stringify(&source).unwrap()
        }
     }

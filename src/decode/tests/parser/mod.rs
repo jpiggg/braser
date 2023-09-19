@@ -5,35 +5,35 @@ use crate::shared::{tokens::Token, Node};
 #[test]
 fn test_flatten_object() {
     let tokens = vec![
-        Token { name: String::from("OS"), value: String::from("") },
-        Token { name: String::from("ST"), value: String::from("\"foo####\\\" bar\\\"\"") },
-        Token { name: String::from("KT"), value: String::from("") },
-        Token { name: String::from("ST"), value: String::from("\"test\"") },
-        Token { name: String::from("LT"), value: String::from("") },
-        Token { name: String::from("ST"), value: String::from("\"hi\"") },
-        Token { name: String::from("KT"), value: String::from("") },
-        Token { name: String::from("NU"), value: String::from("100500") },
-        Token { name: String::from("LT"), value: String::from("") },
-        Token { name: String::from("ST"), value: String::from("\"date\"") },
-        Token { name: String::from("KT"), value: String::from("") },
-        Token { name: String::from("DT"), value: String::from("2023-08-01T14:32:01.624Z") },
-        Token { name: String::from("LT"), value: String::from("") },
-        Token { name: String::from("ST"), value: String::from("\"myFn\"") },
-        Token { name: String::from("KT"), value: String::from("") },
-        Token { name: String::from("FU"), value: String::from("[name=my_fn] function my_fn(a, b) {\n        return a + b;\n    }") },
-        Token { name: String::from("LT"), value: String::from("") }, 
-        Token { name: String::from("ST"), value: String::from("\"undefined\"") },
-        Token { name: String::from("KT"), value: String::from("") },
-        Token { name: String::from("UN"), value: String::from("") },
-        Token { name: String::from("LT"), value: String::from("") },
-        Token { name: String::from("ST"), value: String::from("\"nan\"") },
-        Token { name: String::from("KT"), value: String::from("") },
-        Token { name: String::from("NA"), value: String::from("") },
-        Token { name: String::from("LT"), value: String::from("") },
-        Token { name: String::from("ST"), value: String::from("\"null\"") },
-        Token { name: String::from("KT"), value: String::from("") },
-        Token { name: String::from("NL"), value: String::from("") },
-        Token { name: String::from("OE"), value: String::from("") }
+        Token { name: String::from("OS"), value: String::from("") , start: 0},
+        Token { name: String::from("ST"), value: String::from("\"foo####\\\" bar\\\"\"") , start: 0},
+        Token { name: String::from("KT"), value: String::from("") , start: 0},
+        Token { name: String::from("ST"), value: String::from("\"test\"") , start: 0},
+        Token { name: String::from("LT"), value: String::from("") , start: 0},
+        Token { name: String::from("ST"), value: String::from("\"hi\"") , start: 0},
+        Token { name: String::from("KT"), value: String::from("") , start: 0},
+        Token { name: String::from("NU"), value: String::from("100500") , start: 0},
+        Token { name: String::from("LT"), value: String::from("") , start: 0},
+        Token { name: String::from("ST"), value: String::from("\"date\"") , start: 0},
+        Token { name: String::from("KT"), value: String::from("") , start: 0},
+        Token { name: String::from("DT"), value: String::from("2023-08-01T14:32:01.624Z") , start: 0},
+        Token { name: String::from("LT"), value: String::from("") , start: 0},
+        Token { name: String::from("ST"), value: String::from("\"myFn\"") , start: 0},
+        Token { name: String::from("KT"), value: String::from("") , start: 0},
+        Token { name: String::from("FU"), value: String::from("[name=my_fn] function my_fn(a, b) {\n        return a + b;\n    }") , start: 0},
+        Token { name: String::from("LT"), value: String::from("") , start: 0}, 
+        Token { name: String::from("ST"), value: String::from("\"undefined\"") , start: 0},
+        Token { name: String::from("KT"), value: String::from("") , start: 0},
+        Token { name: String::from("UN"), value: String::from("") , start: 0},
+        Token { name: String::from("LT"), value: String::from("") , start: 0},
+        Token { name: String::from("ST"), value: String::from("\"nan\"") , start: 0},
+        Token { name: String::from("KT"), value: String::from("") , start: 0},
+        Token { name: String::from("NA"), value: String::from("") , start: 0},
+        Token { name: String::from("LT"), value: String::from("") , start: 0},
+        Token { name: String::from("ST"), value: String::from("\"null\"") , start: 0},
+        Token { name: String::from("KT"), value: String::from("") , start: 0},
+        Token { name: String::from("NL"), value: String::from("") , start: 0},
+        Token { name: String::from("OE"), value: String::from(""), start: 0 }
     ];
 
     let result = parser(Node {
@@ -137,19 +137,19 @@ fn test_flatten_object() {
 #[test]
 fn nested_object() {
     let tokens = vec![
-        Token{ name: String::from("OS"), value: String::from("")},
-        Token{ name: String::from("ST"), value: String::from("\"foo\"")},
-        Token{ name: String::from("KT"), value: String::from("")},
-        Token{ name: String::from("OS"), value: String::from("")},
-        Token{ name: String::from("ST"), value: String::from("\"hello\"")},
-        Token{ name: String::from("KT"), value: String::from("")},
-        Token{ name: String::from("ST"), value: String::from("\"world\"")},
-        Token{ name: String::from("OE"), value: String::from("")},
-        Token{name: String::from("LT"), value: String::from("")},
-        Token{name: String::from("ST"), value: String::from("\"second\"")},
-        Token{name: String::from("KT"), value: String::from("")},
-        Token{name: String::from("NU"), value: String::from("12345")},
-        Token{ name: String::from("OE"), value: String::from("")}
+        Token{ name: String::from("OS"), value: String::from(""), start: 0},
+        Token{ name: String::from("ST"), value: String::from("\"foo\""), start: 0},
+        Token{ name: String::from("KT"), value: String::from(""), start: 0},
+        Token{ name: String::from("OS"), value: String::from(""), start: 0},
+        Token{ name: String::from("ST"), value: String::from("\"hello\""), start: 0},
+        Token{ name: String::from("KT"), value: String::from(""), start: 0},
+        Token{ name: String::from("ST"), value: String::from("\"world\""), start: 0},
+        Token{ name: String::from("OE"), value: String::from(""), start: 0},
+        Token{ name: String::from("LT"), value: String::from(""), start: 0},
+        Token{ name: String::from("ST"), value: String::from("\"second\""), start: 0},
+        Token{ name: String::from("KT"), value: String::from(""), start: 0},
+        Token{ name: String::from("NU"), value: String::from("12345"), start: 0},
+        Token{ name: String::from("OE"), value: String::from(""), start: 0}
     ];
 
     let result = parser(Node {
@@ -211,8 +211,8 @@ fn nested_object() {
 #[test]
 fn empty_object() {
     let tokens = vec![
-        Token{name: String::from("OS"), value: String::from("")},
-        Token{name: String::from("OE"), value: String::from("")}
+        Token{name: String::from("OS"), value: String::from(""), start: 0},
+        Token{name: String::from("OE"), value: String::from(""), start: 0}
     ];
 
     let result = parser(Node {
@@ -239,21 +239,21 @@ fn empty_object() {
 #[test]
 fn flatten_array() {
     let tokens = vec![
-        Token{name: String::from("AS"), value: String::from("")},
-        Token{name: String::from("ST"), value: String::from("\"foo####\\\" bar\\\"\"")},
-        Token{name: String::from("LT"), value: String::from("")},
-        Token{name: String::from("OS"), value: String::from("")},
-        Token{name: String::from("ST"), value: String::from("\"hi\"")},
-        Token{name: String::from("KT"), value: String::from("")},
-        Token{name: String::from("DT"), value: String::from("2023-08-01T14:32:01.624Z")},
-        Token{name: String::from("LT"), value: String::from("")},
-        Token{name: String::from("ST"), value: String::from("\"test\"")},
-        Token{name: String::from("KT"), value: String::from("")},
-        Token{name: String::from("NU"), value: String::from("123")},
-        Token{name: String::from("OE"), value: String::from("")},
-        Token{name: String::from("LT"), value: String::from("")},
-        Token{name: String::from("NL"), value: String::from("")},
-        Token{name: String::from("AE"), value: String::from("")},
+        Token{name: String::from("AS"), value: String::from(""), start: 0},
+        Token{name: String::from("ST"), value: String::from("\"foo####\\\" bar\\\"\""), start: 0},
+        Token{name: String::from("LT"), value: String::from(""), start: 0},
+        Token{name: String::from("OS"), value: String::from(""), start: 0},
+        Token{name: String::from("ST"), value: String::from("\"hi\""), start: 0},
+        Token{name: String::from("KT"), value: String::from(""), start: 0},
+        Token{name: String::from("DT"), value: String::from("2023-08-01T14:32:01.624Z"), start: 0},
+        Token{name: String::from("LT"), value: String::from(""), start: 0},
+        Token{name: String::from("ST"), value: String::from("\"test\""), start: 0},
+        Token{name: String::from("KT"), value: String::from(""), start: 0},
+        Token{name: String::from("NU"), value: String::from("123"), start: 0},
+        Token{name: String::from("OE"), value: String::from(""), start: 0},
+        Token{name: String::from("LT"), value: String::from(""), start: 0},
+        Token{name: String::from("NL"), value: String::from(""), start: 0},
+        Token{name: String::from("AE"), value: String::from(""), start: 0},
     ];
 
     let result = parser(Node {
@@ -318,19 +318,19 @@ fn flatten_array() {
 #[test]
 fn nested_array() {
     let tokens = vec![
-        Token{name: String::from("AS"), value: String::from("")},
-        Token{name: String::from("UN"), value: String::from("")},
-        Token{name: String::from("LT"), value: String::from("")},
-        Token{name: String::from("AS"), value: String::from("")},
-        Token{name: String::from("OS"), value: String::from("")},
-        Token{name: String::from("ST"), value: String::from("\"hello\"")},
-        Token{name: String::from("KT"), value: String::from("")},
-        Token{name: String::from("AS"), value: String::from("")},
-        Token{name: String::from("BI"), value: String::from("9007199254740991n")},
-        Token{name: String::from("AE"), value: String::from("")},
-        Token{name: String::from("OE"), value: String::from("")},
-        Token{name: String::from("AE"), value: String::from("")},
-        Token{name: String::from("AE"), value: String::from("")}
+        Token{name: String::from("AS"), value: String::from(""), start: 0},
+        Token{name: String::from("UN"), value: String::from(""), start: 0},
+        Token{name: String::from("LT"), value: String::from(""), start: 0},
+        Token{name: String::from("AS"), value: String::from(""), start: 0},
+        Token{name: String::from("OS"), value: String::from(""), start: 0},
+        Token{name: String::from("ST"), value: String::from("\"hello\""), start: 0},
+        Token{name: String::from("KT"), value: String::from(""), start: 0},
+        Token{name: String::from("AS"), value: String::from(""), start: 0},
+        Token{name: String::from("BI"), value: String::from("9007199254740991n"), start: 0},
+        Token{name: String::from("AE"), value: String::from(""), start: 0},
+        Token{name: String::from("OE"), value: String::from(""), start: 0},
+        Token{name: String::from("AE"), value: String::from(""), start: 0},
+        Token{name: String::from("AE"), value: String::from(""), start: 0}
     ];
 
     let result = parser(Node {
@@ -391,8 +391,8 @@ fn nested_array() {
 #[test]
 fn empty_flatten_array() {
     let tokens = vec![
-        Token{name: String::from("AS"), value: String::from("")},
-        Token{name: String::from("AE"), value: String::from("")}
+        Token{name: String::from("AS"), value: String::from(""), start: 0},
+        Token{name: String::from("AE"), value: String::from(""), start: 0}
     ];
 
     let result = parser(Node {
@@ -418,10 +418,10 @@ fn empty_flatten_array() {
 #[test]
 fn empty_nested_array() {
     let tokens = vec![
-        Token{name: String::from("AS"), value: String::from("")},
-        Token{name: String::from("AS"), value: String::from("")},
-        Token{name: String::from("AE"), value: String::from("")},
-        Token{name: String::from("AE"), value: String::from("")}
+        Token{name: String::from("AS"), value: String::from(""), start: 0},
+        Token{name: String::from("AS"), value: String::from(""), start: 0},
+        Token{name: String::from("AE"), value: String::from(""), start: 0},
+        Token{name: String::from("AE"), value: String::from(""), start: 0}
     ];
 
     let result = parser(Node {

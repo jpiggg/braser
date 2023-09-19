@@ -1,10 +1,12 @@
 pub mod tokens;
 pub mod helpers;
+pub mod error;
 
 use std::fmt;
 use std::collections::HashMap;
 use helpers::{is_double_quote, is_digit, is_sign, is_point, is_exp};
 use crate::shared::tokens::{TOKEN_TYPES, Token};
+use self::error::LexicalError;
 
 const TOKEN_NAME: &'static str = "TOKEN_NAME";
 const TOKEN_VALUE: &'static str  = "TOKEN_VALUE";
@@ -78,7 +80,8 @@ pub struct Ctx<'a> {
     token_status: &'static str,
     token_name: &'a str,
     token_value: &'a str,
-    token_type: &'a str
+    token_type: &'a str,
+    token_start: usize
 }
 
 impl<'a> Ctx<'a> {
@@ -87,12 +90,13 @@ impl<'a> Ctx<'a> {
             token_status: TOKEN_NAME,
             token_name: "",
             token_value: "",
-            token_type: ""
+            token_type: "",
+            token_start: 0
         }
     }
 }
 
-pub fn run(source: &str) -> Vec<Token>{
+pub fn run(source: &str) -> Result<Vec<Token>, LexicalError>{
     let tokens: HashMap<&str, &str> =  HashMap::from([
         ("a$", "OS"),
         ("}", "OE"),
@@ -130,6 +134,7 @@ pub fn run(source: &str) -> Vec<Token>{
     
     let mut res: Vec<Token> = vec![];
     let iter: &std::str::Chars = &source.chars();
+
     for (i, _) in iter.clone().enumerate() {
         let char: Char = Char {
             prev_char: if i > 0 { Some(chars[&i - 1]) } else { None },
@@ -139,11 +144,13 @@ pub fn run(source: &str) -> Vec<Token>{
 
         match ctx.token_status {
             "TOKEN_NAME" => {
+                let mut s = 0;
+    
                 let mut name: Option<&&str> = tokens.get(&char.cur_char.to_string() as &str);
-
+                
                 if char.prev_char != None && name == None {
-                    let pair = &(char.prev_char.expect("The prev char should not be None").to_string() + &char.cur_char.to_string() ) as &str;
-                    name = tokens.get(pair);
+                    name = tokens.get(&(char.prev_char.unwrap().to_string() + &char.cur_char.to_string() ) as &str);
+                    s += 1;
                 }
 
                 if name != None {
@@ -154,10 +161,11 @@ pub fn run(source: &str) -> Vec<Token>{
                     ctx.token_type = *token_type;
                     
                     if !should_create_token_value(token_type) {
-                        res.push(Token { name: ctx.token_name.to_string(), value: ctx.token_value.to_string() });
+                        res.push(Token { name: ctx.token_name.to_string(), value: ctx.token_value.to_string(), start: i - s });
                         ctx = Ctx::new();
                     } else {
                         ctx.token_status = TOKEN_VALUE;
+                        ctx.token_start = i - s;
                     }
 
                     continue;
@@ -203,8 +211,10 @@ pub fn run(source: &str) -> Vec<Token>{
                     _ => panic!("There is no accumulator for specific token type {}", ctx.token_type)
                 }
 
+                println!("--------INDEX-----{} {}", chars.len(), i);
+
                 if is_finished == true {
-                    res.push(Token { name: ctx.token_name.to_string(), value: ctx.token_value.to_string() });
+                    res.push(Token { name: ctx.token_name.to_string(), value: ctx.token_value.to_string(), start: ctx.token_start });
 
                     ctx = Ctx::new();
                 }
@@ -213,5 +223,5 @@ pub fn run(source: &str) -> Vec<Token>{
         }
     }
 
-    res
+    Ok(res)
 }

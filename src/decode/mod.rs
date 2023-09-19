@@ -15,7 +15,7 @@ use crate::shared::Node;
 
 #[wasm_bindgen]
 pub fn decode(source: JsString) -> JsValue {
-    let lexems = lexer(&source.as_string().unwrap());
+    let lexems = lexer(&source.as_string().unwrap()).unwrap();
 
     let nodes_tree = parser(Node {
         kind: String::from("root"),

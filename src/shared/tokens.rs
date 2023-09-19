@@ -43,5 +43,6 @@ lazy_static! {
 #[allow(dead_code)]
 pub struct Token {
     pub name: String,
-    pub value: String
+    pub value: String,
+	pub start: usize
 }
