@@ -40,7 +40,7 @@ fn test_flatten_object() {
         kind: String::from("root"),
         value: String::from(""),
         children: vec![]
-    }, &tokens);
+    }, &tokens).unwrap();
     let expected = Node{
         kind: String::from("root"),
         value: String::from(""),
@@ -156,7 +156,7 @@ fn nested_object() {
         kind: String::from("root"),
         value: String::from(""),
         children: vec![]
-    }, &tokens);
+    }, &tokens).unwrap();
 
     let expected = Node {
         kind: String::from("root"),
@@ -219,7 +219,7 @@ fn empty_object() {
         kind: String::from("root"),
         value: String::from(""),
         children: vec![]
-    }, &tokens);
+    }, &tokens).unwrap();
 
     let expected = Node{
         kind: String::from("root"),
@@ -260,7 +260,7 @@ fn flatten_array() {
         kind: String::from("root"),
         value: String::from(""),
         children: vec![]
-    }, &tokens);
+    }, &tokens).unwrap();
 
     let expected = Node {
         kind: String::from("root"),
@@ -337,7 +337,7 @@ fn nested_array() {
         kind: String::from("root"),
         value: String::from(""),
         children: vec![]
-    }, &tokens);
+    }, &tokens).unwrap();
 
     let expected = Node {
         kind: String::from("root"),
@@ -399,7 +399,7 @@ fn empty_flatten_array() {
         kind: String::from("root"),
         value: String::from(""),
         children: vec![]
-    }, &tokens);
+    }, &tokens).unwrap();
 
     let expected = Node {
         kind: String::from("root"),
@@ -428,7 +428,7 @@ fn empty_nested_array() {
         kind: String::from("root"),
         value: String::from(""),
         children: vec![]
-    }, &tokens);
+    }, &tokens).unwrap();
 
     let expected = Node {
         kind: String::from("root"),

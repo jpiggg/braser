@@ -357,6 +357,6 @@ fn test_error_unexpected_end_of () {
     let src: &str = r#"3$"hello"#;
     let err = lexer(src).unwrap_err();
 
-    assert_eq!(r#"Unexpected end 'o' of token "ST" at position 7"#, err.msg);
+    assert_eq!(r#"Unexpected end of token "ST" at position 7"#, err.msg);
     
 }

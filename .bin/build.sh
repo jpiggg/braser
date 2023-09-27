@@ -30,11 +30,15 @@ wasm-pack build -t nodejs -d pkg-node
 # Get the package name
 PKG_NAME=$(jq -r .name pkg/package.json | sed 's/\-/_/g')
 
+mv "pkg/${PKG_NAME}.js" "pkg/${PKG_NAME}_web.js"
+
 # Merge nodejs & browser & bundler packages
-cp "pkg-node/${PKG_NAME}.js" "pkg/${PKG_NAME}_main.js"
-sed "s/require[\(]'\.\/${PKG_NAME}/require\('\.\/${PKG_NAME}_main/" "pkg-bundler/${PKG_NAME}_bg.js" > "pkg/${PKG_NAME}_bg.js"
-jq ".files += [\"${PKG_NAME}_bg.js\"]" pkg/package.json \
-    | jq ".main = \"${PKG_NAME}_main.js\"" > pkg/temp.json
+cp "pkg-node/${PKG_NAME}.js" "pkg/${PKG_NAME}_node.js"
+cp "pkg-bundler/${PKG_NAME}.js" "pkg/${PKG_NAME}.js"
+
+sed "s/require[\(]'\.\/${PKG_NAME}/require\('\.\/${PKG_NAME}_node/" "pkg-bundler/${PKG_NAME}_bg.js" > "pkg/${PKG_NAME}_bg.js"
+jq ".files += [\"${PKG_NAME}_bg.js\", \"${PKG_NAME}_web.js\"]" pkg/package.json \
+    | jq ".main = \"${PKG_NAME}_node.js\"" > pkg/temp.json
 mv pkg/temp.json pkg/package.json
 rm -rf pkg-node
 rm -rf pkg-bundler

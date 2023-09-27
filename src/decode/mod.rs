@@ -21,7 +21,7 @@ pub fn decode(source: JsString) -> JsValue {
         kind: String::from("root"),
         value: String::from(""),
         children: vec![]
-    }, &lexems);
+    }, &lexems).unwrap();
 
     let result: wasm_bindgen::JsValue = compiler(nodes_tree.children.first().unwrap());
 

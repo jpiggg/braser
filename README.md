@@ -3,6 +3,8 @@
 # Braser
 The fast serialiser written in Rust! 
 
+Note! Right now it can be used in raw nodejs apps only, but using with bundlers (webpack/rollup) come soon!
+
 ## Motivation
 
 With braser you could serialise a lot of different data types without wastes. It encodes data to string and then decode it to the same data types as initial were. 

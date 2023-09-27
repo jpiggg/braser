@@ -1,9 +1,9 @@
-pub mod errors;
+pub mod error;
 
 extern crate regex;
 
 use regex::RegexBuilder;
-use self::errors::Error;
+use self::error::ParsingError;
 use crate::shared::tokens::{TOKEN_TYPES, Token};
 use crate::shared::Node;
 
@@ -24,67 +24,67 @@ fn is_key_pair(token_slice: &[Token]) -> bool {
 	false
 }
 
-fn create_object<'a>( mut root_node: Node, tokens: &'a [Token]) ->( Node, &'a [Token]) {
+fn create_object<'a>( mut root_node: Node, tokens: &'a [Token]) -> Result<( Node, &'a [Token]), ParsingError> {
 	if tokens.len() == 0 {
-		return (root_node, tokens);
+		return Ok((root_node, tokens));
 	}
 
 	let token_type = TOKEN_TYPES.get(&tokens[0].name.as_str()).unwrap();
 
 	if *token_type == "objectEnd" {
-		return (root_node, &tokens[1..tokens.len()]);
+		return Ok((root_node, &tokens[1..tokens.len()]));
 	}
 
 	if !is_key_pair(&tokens[0..2]) {
-        Error::new("Invalid key pair value");
+		return Err(ParsingError::new("INVALID_KEY_PAIR"));
     }
 
 	if !is_valid_object_key(TOKEN_TYPES.get(&tokens[0].name.as_str()).unwrap()) {
-		Error::new("Invalid object key type");
+		return Err(ParsingError::new("INVALID_OBJECT_KEY"));
 	}
 
     let (new_node, rest) = create_node (Node {
         kind: String::from("pair"),
         value: tokens[0].value.clone(),
         children: vec![]
-    }, &tokens[2..tokens.len()]);
+    }, &tokens[2..tokens.len()])?;
 
     root_node.children.push(new_node);
     
     let token_type_2 = TOKEN_TYPES.get(&rest[0].name.as_str()).unwrap();
 
     if *token_type_2 == "objectEnd" {
-        return (root_node, &rest[1..rest.len()]);
+        return Ok((root_node, &rest[1..rest.len()]));
     } else {
         return create_object(root_node.clone(), &rest[1..rest.len()]);
     }
 
 }
 
-fn create_array(root_node: Node, tokens: &[Token]) -> ( Node, &[Token]) {
+fn create_array(root_node: Node, tokens: &[Token]) -> Result<( Node, &[Token]), ParsingError> {
 	if tokens.len() == 0 {
-		return (root_node, &tokens[1..(tokens.len())]);
+		return Ok((root_node, &tokens[1..(tokens.len())]));
 	}
 
 	let token_type = TOKEN_TYPES.get(&tokens[0].name.as_str()).unwrap();
 
 	if *token_type == "arrayEnd" {
-		return (root_node, &tokens[1..tokens.len()]);
+		return Ok((root_node, &tokens[1..tokens.len()]));
 	}
 
 
-	let (new_node, rest) = create_node( root_node.clone(), tokens);
+	let (new_node, rest) = create_node( root_node.clone(), tokens)?;
 
 	let token_type_2 = TOKEN_TYPES.get(&rest[0].name.as_str()).unwrap();
 
     if *token_type_2 == "arrayEnd" {
-        return (new_node, &rest[1..rest.len()]);
+        return Ok((new_node, &rest[1..rest.len()]));
     } else {
         return create_array(new_node, &rest[1..rest.len()]);
     }
 }
 
-fn create_node(mut node: Node, mut tokens: &[Token]) -> (Node, &[Token]){
+fn create_node(mut node: Node, mut tokens: &[Token]) -> Result<(Node, &[Token]), ParsingError>{
 	let token_type = TOKEN_TYPES.get(&tokens[0].name.as_str()).unwrap();
 
 	match *token_type {
@@ -95,7 +95,7 @@ fn create_node(mut node: Node, mut tokens: &[Token]) -> (Node, &[Token]){
 				children: vec![]
 			};
 
-			let (object_node, rest) = create_object(root_node, &tokens[1..tokens.len()]);
+			let (object_node, rest) = create_object(root_node, &tokens[1..tokens.len()])?;
 
 			node.children.push(object_node);
 			tokens = rest;
@@ -105,7 +105,7 @@ fn create_node(mut node: Node, mut tokens: &[Token]) -> (Node, &[Token]){
 				kind: String::from("array"),
 				value: String::from(""),
 				children: vec![]
-			}, &tokens[1..(tokens.len())]);
+			}, &tokens[1..(tokens.len())])?;
 
 			node.children.push(new_node);
 			tokens = rest;
@@ -136,15 +136,15 @@ fn create_node(mut node: Node, mut tokens: &[Token]) -> (Node, &[Token]){
 		}
 	}
 
-	(node, tokens)
+	Ok((node, tokens))
 }
 
-pub fn run(root: Node, tokens: &[Token]) -> Node {
+pub fn run(root: Node, tokens: &[Token]) -> Result<Node, ParsingError> {
 	if tokens.len() == 0 {
-		return root;
+		return Ok(root);
 	}
 
-	let (new_node, rest) = create_node( root.clone(), tokens);
+	let (new_node, rest) = create_node( root.clone(), tokens)?;
 
 	run(new_node, rest)
 }

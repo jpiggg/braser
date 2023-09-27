@@ -18,6 +18,10 @@ fn is_date(val: &JsValue) -> bool {
 #[wasm_bindgen]
 pub fn encode(source: JsValue) -> js_sys::JsString {
     return match &source {
+       source if JsValue::is_null(&source) => {
+          let token = TOKENS.get("null").unwrap();
+          js_sys::JsString::from(token.as_str())
+       },
        source if JsValue::is_string(&source) => {
             let token: String = TOKENS.get("string").unwrap().to_owned();
             let val: String = js_sys::JSON::stringify(&source).unwrap().into();
@@ -40,10 +44,10 @@ pub fn encode(source: JsValue) -> js_sys::JsString {
 
             js_sys::JsString::from(token.to_owned() + val.to_iso_string().as_string().unwrap().as_str())
        },
-       source if *source == JsValue::NULL => {
-            let token = TOKENS.get("null").unwrap();
+       source if js_sys::Number::is_nan(&source) => {
+          let token = TOKENS.get("nan").unwrap();
 
-            js_sys::JsString::from(token.as_str())
+          js_sys::JsString::from(token.as_str())
        },
        source if JsValue::js_typeof(&source) == "boolean" => {
             let token = TOKENS.get("boolean").unwrap();
@@ -81,7 +85,7 @@ pub fn encode(source: JsValue) -> js_sys::JsString {
                     result += ",";
                 }
 
-                js_sys::JsString::from(token.to_owned() + result.as_str())
+                js_sys::JsString::from(token.to_owned() + "[" + result.as_str() + "]")
         },
         source if JsValue::is_object(&source) => {
             let token = TOKENS.get("objectstart").unwrap().to_owned();

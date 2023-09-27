@@ -12,7 +12,7 @@ pub struct LexicalError<'a> {
 impl<'a> LexicalError<'a> {
     pub fn new(kind: &'a str, symbol: char, token: &'a str, index: usize, src: String) -> Self {
         let msg = match kind {
-            "UNEXPECTED_END" => format!("Unexpected end {symbol:?} of token {token:?} at position {index:?}"),
+            "UNEXPECTED_END" => format!("Unexpected end of token {token:?} at position {index:?}"),
             _ => format!("Unknown symbol {symbol:?} for {token:?} at position {index:?}")
         };
 
