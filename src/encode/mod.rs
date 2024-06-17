@@ -58,7 +58,7 @@ pub fn encode(source: JsValue) -> js_sys::JsString {
        source if JsValue::js_typeof(&source) == "function" => {
             let token = TOKENS.get("function").unwrap();
             let js_fn: &js_sys::Function = source.as_ref().unchecked_ref();
-            let fn_name: String = js_fn.name().into();
+            let fn_name: String = if js_fn.name().length() == 0 { String::from("anonymous")} else {js_fn.name().into()};
             let fn_string: String = js_fn.to_string().into();
 
             js_sys::JsString::from(token.to_owned() + "[name=" + fn_name.as_str() + "]" + fn_string.as_str() + "$")
@@ -93,7 +93,6 @@ pub fn encode(source: JsValue) -> js_sys::JsString {
             let js_obj: js_sys::Object = source.as_ref().clone().unchecked_into();
             let js_obj_keys: Vec<JsValue> = js_sys::Object::keys(&js_obj).to_vec();
             let mut result: Vec<String> = vec![];
-
             for key in js_obj_keys.iter() {
                 let obj_val = js_sys::Reflect::get(&js_obj, key).unwrap();
 

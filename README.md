@@ -3,11 +3,9 @@
 # Braser
 The fast serialiser written in Rust! 
 
-Note! Right now it can be used in raw nodejs apps only, but using with bundlers (webpack/rollup) come soon!
-
 ## Motivation
 
-With braser you could serialise a lot of different data types without wastes. It encodes data to string and then decode it to the same data types as initial were. 
+With braser you could serialise a lot of different data types without wastes. It encodes data to string and then decode it to the same data types as initial were. It similar to JSON, but has some differencies 
 
 Right now we support those types of data:
 
@@ -29,18 +27,13 @@ Right now we support those types of data:
 | Symbol | No |
 
 
-## Quick start
+## Installation
 
-```js
-const br = require("braser");
-
-console.log(br.decode(br.encode({foo: "bar"})));
-
-```
+```npm i braser```
 
 ## Usage
 
-The braser supports different targets, depending on your needs.
+The braser supports different targets, depending on your needs. Right now it is supported for usage in nodejs, web (with webpack/rollup/esbuild/etc) or either with a script tag.
 
 ### Usage in Browser
 
