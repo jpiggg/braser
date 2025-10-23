@@ -1,0 +1,36 @@
+WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
+_QUOTE = _{ "\"" | "'" }
+_left_brace = _{ "{" }
+_right_brace = _{ "}" }
+_left_bracket = _{ "[" }
+_right_bracket = _{ "]" }
+_left_paren = _{ "(" }
+_right_paren = _{ ")" }
+_colon = _{ ":" }
+_semicolon = _{ ";" }
+_dot = _{ "." }
+_arrow = _{ "=>" }
+_comma = _{ "," }
+_const = _{ "const" }
+_let = _{ "let" }
+_var = _{ "var" }
+_true = _{ "true" }
+_false = _{ "false" }
+_sign = _{ "+" | "-" }
+// Function = {ANY} @TODO: implement function parsing
+// Date = {String | Number} @TODO: implement date parsing
+NaN = { "NaN" }
+undefined = { "undefined" }
+null = { "null" }
+Infinity = {_sign? ~ "Infinity"}
+BigInt = {_sign? ~ ASCII_DIGIT+ ~ "n"}
+Boolean = {_true | _false}
+Number = {_sign? ~ ASCII_DIGIT+ ~ (_dot ~ ASCII_DIGIT+)?}
+String = {PUSH(_QUOTE) ~ !PEEK* ~ POP}
+_key = {ASCII_ALPHA+}
+_value = {Object | Array | String | Number | Boolean | null | undefined | NaN | Infinity | BigInt /* | Function | Date */ }
+_pair = {_key ~ _colon ~ _value ~ _comma?}
+Array = {_left_bracket ~ (_value ~ _comma?)* ~ _right_bracket}
+Object = {_left_brace ~ _pair* ~ _right_brace}
+
+ESon = { _QUOTE ~ Object ~ _QUOTE }
