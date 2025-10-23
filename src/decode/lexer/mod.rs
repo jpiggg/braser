@@ -2,7 +2,7 @@ pub mod tokens;
 pub mod helpers;
 pub mod error;
 
-use std::fmt;
+use std::{char, fmt};
 use std::collections::HashMap;
 use helpers::{is_double_quote, is_digit, is_sign, is_point, is_exp};
 use crate::shared::tokens::{TOKEN_TYPES, Token};
