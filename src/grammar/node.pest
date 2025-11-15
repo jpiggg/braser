@@ -18,17 +18,35 @@ _true = _{ "true" }
 _false = _{ "false" }
 _sign = _{ "+" | "-" }
 _eq = { "="}
+// Javascript functions
+
+// Function:
+
+// Use cases: 
+
+// Arrow function
+// 	single line return
+// 		function definition (arrow/standart)	
+// 	multi line return
+// 		single function call
+// 		chain function call
+// 		single grouped expression
+// 		grouped expression with function call
+// 		function definition (arrow/standart)
+// 	func body
+// 		function definition (arrow/standart)
 _function = {"function"}
+_func_chain = {_dot ~ _func_call}
 _func_single_line_return = {(!"\n" ~ ANY)* ~ "\n"}
 _func_call = {(ASCII_ALPHA+ ~ ASCII_DIGIT* ~ ASCII_ALPHA*)+ ~ _left_paren ~ PUSH_LITERAL(")") ~ func_args* ~ POP}
-_func_multi_line_return = {_left_paren ~ PUSH_LITERAL(")") ~ _grouped_expression* ~ _func_call* ~ (!PEEK ~ ANY)* ~ POP}
+_func_multi_line_return = {_left_paren ~ PUSH_LITERAL(")") ~ _grouped_expression* ~ (_func_call ~ _func_chain*)* ~ (!PEEK ~ ANY)* ~ POP}
 _grouped_expression = {_left_paren ~ PUSH_LITERAL(")") ~ (!PEEK ~ ANY)* ~ POP ~ _dot?}
 _func_body_def = {_left_brace ~ (!_right_brace ~ ANY)* ~ _right_brace}
-_func_body = {_func_single_line_return | _func_multi_line_return | _func_body_def}
+func_body = {_func_single_line_return | _func_multi_line_return | _func_body_def}
 func_args = {_left_paren ~ func_arg* ~ _right_paren}
 func_arg = {ASCII_ALPHA+ ~ ASCII_DIGIT* ~ ASCII_ALPHA* ~ _comma?}
 arrow_func_def = {(_const | _let) ~ ASCII_ALPHA+ ~ _eq }
-arrow_function = {arrow_func_def? ~ func_args* ~ _arrow ~ _func_body}
+arrow_function = {arrow_func_def? ~ func_args* ~ _arrow ~ func_body}
 Function = { arrow_function }
 // Date = {String | Number} @TODO: implement date parsing
 NaN = { "NaN" }
@@ -44,4 +62,4 @@ value = {Object | Array | String | Number | Boolean | null | undefined | NaN | I
 pair = {key ~ _colon ~ value ~ _comma?}
 Array = {_left_bracket ~ (value ~ _comma?)* ~ _right_bracket}
 Object = {_left_brace ~ pair* ~ _right_brace}
-ESon = { _QUOTE ~ Object ~ _QUOTE }
+ESon = {Object}
