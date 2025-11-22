@@ -1,0 +1,17 @@
+{
+  name: 'foo',
+  value: 'baz',
+  isDefined: false,
+  isNotDefined: true,
+  // This is a response from some API
+  data: undefined,
+  valid_until: NaN,
+  valid_from: 1763225669356,
+  /*
+    All cool guys use buffer like this:
+    [1, 2, 3] // Yes, it is a comment inside another one!
+  */
+  buffer: [16, 21, 51, 0, 0, 0, 0],
+  src: ['a', 'b', 'c'],
+  source: 'abc',
+}

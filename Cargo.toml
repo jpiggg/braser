@@ -16,6 +16,8 @@ js-sys = "0.3.52"
 regex = "1.9.3"
 pest = "2.8.3"
 pest_derive = "2.8.3"
+pest-ast = "0.3.6"
+from-pest = "0.3.4"
 
 [dev-dependencies]
 pretty_assertions = "1"

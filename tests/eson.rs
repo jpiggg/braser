@@ -1,7 +1,7 @@
 use pest_test_gen::{pest_tests};
 
 #[pest_tests(
-  eson::parser::ESONParser,
+  eson::parser::ESonParser,
   eson::parser::Rule,
   "ESon",
   recursive = true,
@@ -9,4 +9,4 @@ use pest_test_gen::{pest_tests};
 )]
 
 #[cfg(test)]
-mod object_tests {}
+mod eson_tests {}
