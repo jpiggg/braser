@@ -10,6 +10,7 @@ Flat object test
   // This is a response from some API
   data: undefined,
   valid_until: NaN,
+
   valid_from: 1763225669356,
   /*
     All cool guys use buffer like this:
@@ -17,7 +18,7 @@ Flat object test
   */
   buffer: [16, 21, 51, 0, 0, 0, 0],
   src: ['a', 'b', 'c'],
-  source: 'abc',
+  source: 'abc'
 }
 
 ========

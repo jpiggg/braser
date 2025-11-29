@@ -26,9 +26,9 @@ pub mod ast {
 
     #[derive(Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::String))]
-    pub struct String {
-        #[pest_ast(outer(with(span_into_str), with(str::to_string)))]
-        value: std::string::String
+    pub struct String<'pest> {
+        #[pest_ast(outer())]
+        value: pest::Span<'pest>
     }
 
     #[derive(Debug, pest_ast::FromPest)]
@@ -61,10 +61,10 @@ pub mod ast {
 
     #[derive(Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::value))]
-    pub enum Value {
-        Object(Box<Object>),
-        Array(Box<Array>),
-        String(String),
+    pub enum Value<'pest> {
+        Object(Box<Object<'pest>>),
+        Array(Box<Array<'pest>>),
+        String(String<'pest>),
         Number(Number),
         Boolean(Boolean),
         Null(Null),
@@ -74,49 +74,63 @@ pub mod ast {
         BigInt(BigInt)
     }
 
-     #[derive(Debug, pest_ast::FromPest)]
+    #[derive(Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::COMMENT))]
-    pub struct Comment {
-        #[pest_ast(outer(with(span_into_str), with(str::to_string)))]
-        value: std::string::String
+    pub struct Comment<'pest> {
+        #[pest_ast(outer())]
+        value: pest::Span<'pest>
     }
 
     #[derive(Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::key))]
-    pub struct Key {
-        #[pest_ast(outer(with(span_into_str), with(str::to_string)))]
-        value: std::string::String
+    pub struct Key<'pest> {
+        #[pest_ast(outer())]
+        value: pest::Span<'pest>
     }
 
     //@TODO: научиться парсить комментарии, если перед ними идет запятая
 
     #[derive(Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::pair))]
-    pub struct Pair {
-        pub key: Option<Key>,
-        pub value: Option<Value>,
-        comment: Option<Comment>
+    pub struct Pair<'pest> {
+        pub key: Option<Key<'pest>>,
+        pub value: Option<Value<'pest>>,
+        comment: Option<Comment<'pest>>
     }
 
     #[derive(Debug, pest_ast::FromPest)]
 
     #[pest_ast(rule(Rule::Array))]
-    pub struct Array {
+    pub struct Array<'pest> {
         #[pest_ast(default(Vec::new()))]
-        pub value: Vec<Value>,
+        pub value: Vec<Value<'pest>>,
     }
 
+    // #[derive(Debug, pest_ast::FromPest)]
+    // #[pest_ast(rule(Rule::Object))]
+    // pub struct Object {
+    //     pub pair: Vec<Body>
+    // }
 
     #[derive(Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::Object))]
-    pub struct Object {
-        pub pair: Vec<Pair>
+    pub struct Object<'pest> {
+        // pub pair: VecPpair>
+          union: Vec<UnionPair<'pest>>,
     }
 
     #[derive(Debug, pest_ast::FromPest)]
+    #[pest_ast(rule(Rule::union_pair))]
+    enum UnionPair<'pest> {
+        pair(Pair<'pest>),
+        comment(Option<Comment<'pest>>),
+    }
+
+
+    #[derive(Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::ESon))]
-    pub struct ESon {
-        pub object: Object,
+    pub struct ESon<'pest> {
+        pub object: Object<'pest>,
         _eoi: EOI,
     }
 
