@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("syntax tree = {syntax_tree:#?}");
     println!();
 
-    Ok(())
+     Ok(())
 }
 
 #[test]

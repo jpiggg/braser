@@ -1,7 +1,8 @@
-use pest::Parser;
+#![allow(
+    dead_code
+)]
 
 use pest_derive;
-use from_pest;
 use pest;
 
 #[derive(pest_derive::Parser)]
@@ -13,7 +14,6 @@ pub mod ast {
     use pest::Span;
 
     fn span_into_str(span: Span) -> &str {
-        println!("Spaaaaan --------> ${:?}", span);
         span.as_str()
     }
 
@@ -50,7 +50,6 @@ pub mod ast {
     #[pest_ast(rule(Rule::NaN))]
     pub struct NaN {}
 
-
     #[derive(Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::null))]
     pub struct Null {}
@@ -85,7 +84,7 @@ pub mod ast {
     #[pest_ast(rule(Rule::key))]
     pub struct Key<'pest> {
         #[pest_ast(outer())]
-        value: pest::Span<'pest>
+        pub value: pest::Span<'pest>
     }
 
     //@TODO: научиться парсить комментарии, если перед ними идет запятая
@@ -93,37 +92,22 @@ pub mod ast {
     #[derive(Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::pair))]
     pub struct Pair<'pest> {
-        pub key: Option<Key<'pest>>,
-        pub value: Option<Value<'pest>>,
-        comment: Option<Comment<'pest>>
+        pub key: Key<'pest>,
+        pub value: Value<'pest>,
+        pub comment: Option<Comment<'pest>>
     }
 
     #[derive(Debug, pest_ast::FromPest)]
-
     #[pest_ast(rule(Rule::Array))]
     pub struct Array<'pest> {
         #[pest_ast(default(Vec::new()))]
         pub value: Vec<Value<'pest>>,
     }
 
-    // #[derive(Debug, pest_ast::FromPest)]
-    // #[pest_ast(rule(Rule::Object))]
-    // pub struct Object {
-    //     pub pair: Vec<Body>
-    // }
-
     #[derive(Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::Object))]
     pub struct Object<'pest> {
-        // pub pair: VecPpair>
-          union: Vec<UnionPair<'pest>>,
-    }
-
-    #[derive(Debug, pest_ast::FromPest)]
-    #[pest_ast(rule(Rule::union_pair))]
-    enum UnionPair<'pest> {
-        pair(Pair<'pest>),
-        comment(Option<Comment<'pest>>),
+        pub pair: Vec<Pair<'pest>>
     }
 
 
