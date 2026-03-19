@@ -134,8 +134,6 @@ mod tests {
     use crate::parse::parser::ast;
     use pretty_assertions::{assert_eq};
 
-    use super::*;
-
     #[test]
     fn test_flat_object() {
         let source = String::from_utf8(std::fs::read("./examples/data.eson").unwrap()).unwrap();
