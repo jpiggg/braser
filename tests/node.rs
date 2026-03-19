@@ -5,29 +5,32 @@ use js_sys;
 
 use eson::parse::*;
 
-wasm_bindgen_test_configure!(run_in_browser);
+wasm_bindgen_test_configure!();
+
+#[wasm_bindgen]
+extern "C" {
+    type Buffer;
+}
+
+#[wasm_bindgen(module = "fs")]
+extern "C" {
+    #[wasm_bindgen(js_name = readFileSync, catch)]
+    fn read_file(path: &str) -> Result<Buffer, JsValue>;
+}
+
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = process, js_name = cwd)]
+    fn process_cwd() -> JsValue;
+}
 
 #[wasm_bindgen_test]
-fn flat_object_browser() {
-    let source_code = "{
-        name: 13,
-        value: 'baz',
-        isDefined: false,
-        isNotDefined: true
-        // This is a response from some API
-        data: undefined,
-        valid_until: NaN,
-        valid_from: 1763225669356
-        /*
-            All cool guys use buffer like this:
-            [1, 2, 3] // Yes, it is a comment inside another one!
-        */
-        buffer: [16, 21, 51, 0, 0, 0, 0],
-        src: ['a', 'b', 'c'],
-        source: 'abc'
-    }";
+fn flat_object_nodejs() {
+    let cwd = process_cwd().as_string().unwrap().to_owned();
+    let source_code = read_file(&(cwd + "/examples/data.eson")).unwrap().obj;
     
-    let string = js_sys::JsString::from(source_code);
+    let string = js_sys::JsString::from(js_sys::ArrayBuffer::from(source_code).to_js_string());
     let res = parse(string);
     let result_string = js_sys::Reflect::get(&res, &js_sys::JsString::from("value")).unwrap();
     let result_number: JsValue = js_sys::Reflect::get(&res, &js_sys::JsString::from("name")).unwrap();
