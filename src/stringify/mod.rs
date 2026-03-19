@@ -16,7 +16,7 @@ fn is_date(val: &JsValue) -> bool {
 
 
 #[wasm_bindgen]
-pub fn encode(source: JsValue) -> js_sys::JsString {
+pub fn stringify(source: JsValue) -> js_sys::JsString {
     return match &source {
        source if JsValue::is_null(&source) => {
           let token = TOKENS.get("null").unwrap();
@@ -81,7 +81,7 @@ pub fn encode(source: JsValue) -> js_sys::JsString {
                 let mut result: String = String::from("");
 
                 for val in js_array.iter() {
-                    result += &encode(val.clone()).as_string().unwrap();
+                    result += &stringify(val.clone()).as_string().unwrap();
                     result += ",";
                 }
 
@@ -96,7 +96,7 @@ pub fn encode(source: JsValue) -> js_sys::JsString {
             for key in js_obj_keys.iter() {
                 let obj_val = js_sys::Reflect::get(&js_obj, key).unwrap();
 
-                let value: String = encode(key.clone()).as_string().unwrap().to_owned() + ":" + encode(obj_val).as_string().unwrap().to_owned().as_str();
+                let value: String = stringify(key.clone()).as_string().unwrap().to_owned() + ":" + stringify(obj_val).as_string().unwrap().to_owned().as_str();
                 
                 result.push(value);
             }

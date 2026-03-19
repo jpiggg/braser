@@ -5,7 +5,7 @@
 use pest_derive;
 
 #[derive(pest_derive::Parser)]
-#[grammar = "grammar/eson.pest"]
+#[grammar = "src/parse/grammar/eson.pest"]
 pub struct ESonParser;
 
 pub mod ast {
@@ -56,7 +56,10 @@ pub mod ast {
 
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::BigInt))]
-    pub struct BigInt {}
+    pub struct BigInt<'pest> {
+        #[pest_ast(outer(with(span_into_str)))]
+        pub value: &'pest str
+    }
 
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::value))]
@@ -70,7 +73,7 @@ pub mod ast {
         Undefined(Undefined),
         NaN(NaN),
         Infinity(Infinity),
-        BigInt(BigInt)
+        BigInt(BigInt<'pest>)
     }
 
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
@@ -128,7 +131,7 @@ pub mod ast {
 mod tests {
     use from_pest::FromPest;
     use pest::Parser;
-    use crate::parser::ast;
+    use crate::parse::parser::ast;
     use pretty_assertions::{assert_eq};
 
     use super::*;
@@ -136,7 +139,7 @@ mod tests {
     #[test]
     fn test_flat_object() {
         let source = String::from_utf8(std::fs::read("./examples/data.eson").unwrap()).unwrap();
-        let mut parse_tree = crate::parser::ESonParser::parse(crate::parser::Rule::ESon, &source).unwrap();
+        let mut parse_tree = crate::parse::parser::ESonParser::parse(crate::parse::parser::Rule::ESon, &source).unwrap();
         let syntax_tree: ast::ESon = ast::ESon::from_pest(&mut parse_tree).expect("infallible");
 
         let expected = ast::ESon {

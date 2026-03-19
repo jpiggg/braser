@@ -1,5 +1,5 @@
 use pretty_assertions::assert_eq;
-use crate::decode::parser::run as parser;
+use crate::_old_decode::parser::run as parser;
 use crate::shared::{tokens::Token, Node};
 
 #[test]

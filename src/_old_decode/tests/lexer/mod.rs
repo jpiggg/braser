@@ -1,5 +1,5 @@
 use pretty_assertions::assert_eq;
-use crate::decode::lexer::run as lexer;
+use crate::_old_decode::lexer::run as lexer;
 use crate::shared::tokens::Token;
 
 #[test]
