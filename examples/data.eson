@@ -1,6 +1,6 @@
 {
   name: 13,
-  value: 'baz',
+  value: 'ba\'z',
   isDefined: false,
   isNotDefined: true
   // This is a response from some API

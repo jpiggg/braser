@@ -23,8 +23,13 @@ Boolean = @{_true | _false}
 Number = @{_sign? ~ ASCII_DIGIT+ ~ (_dot ~ ASCII_DIGIT+)?}
 _quote_start = _{PUSH(_QUOTE) }
 _quote_end = _{POP}
-StringValue = _{_quote_start ~ String ~ _quote_end}
-String = {(!PEEK ~ ANY)*}
+StringValue = _{ _quote_start ~ String ~ _quote_end }
+String = @{ char* }
+char = {
+    !("\""| "\'"  | "\\" ) ~ ANY
+    | "\\" ~ ("\"" | "\'" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
+    | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+}
 one_line_comment = {"//" ~ (!NEWLINE ~ ANY)*}
 SOC = {"/*"}
 EOC = {"*/"}

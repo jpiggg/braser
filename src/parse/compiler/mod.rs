@@ -52,8 +52,9 @@ pub fn compile_value(value: &ast::Value) -> JsValue {
         ast::Value::Infinity(_) => {
             js_sys::Number::POSITIVE_INFINITY.into()
         },
+        //@TODO: test it!
         ast::Value::BigInt(bi) => {
-            JsValue::bigint_from_str(bi.value)
+            JsValue::bigint_from_str(&bi.value[0..bi.value.len() - 2])
         }
     }
 }

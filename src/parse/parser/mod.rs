@@ -150,7 +150,7 @@ mod tests {
                     },
                     ast::Pair {
                         key: ast::Key { value: "value" },
-                        value: ast::Value::String(ast::String { value: "baz" }),
+                        value: ast::Value::String(ast::String { value: "ba\\'z" }),
                         comment: None
                     },
                     ast::Pair {

@@ -8,7 +8,7 @@ use eson::parse::*;
 wasm_bindgen_test_configure!(run_in_browser);
 
 #[wasm_bindgen_test]
-fn flat_object_browser() {
+fn eson_parse_browser() {
     let source_code = "{
         name: 13,
         value: 'baz',
