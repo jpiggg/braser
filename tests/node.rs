@@ -227,7 +227,7 @@ fn eson_stringify_all_types() {
 
     let res = stringify(&obj);
 
-    console_log!(" -----> res {:#?}", res);
+    console_log!("> {:#?}", res);
 
     // Verify the stringified output contains expected patterns
     let res_str = res.as_string().unwrap();
