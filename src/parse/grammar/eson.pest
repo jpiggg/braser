@@ -29,6 +29,7 @@ char = {
     !("\""| "\'"  | "\\" ) ~ ANY
     | "\\" ~ ("\"" | "\'" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
     | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+    | !PEEK ~ ANY
 }
 one_line_comment = {"//" ~ (!NEWLINE ~ ANY)*}
 SOC = {"/*"}
@@ -38,10 +39,12 @@ COMMENT = {one_line_comment | multi_line_comment}
 _key_sign = _{("_" | "$" | "@" | "$")+}
 key_letter = _{ASCII_ALPHA+}
 key_digit = _{ASCII_DIGIT+}
-key_variant = _{(key_letter | key_digit | _key_sign)*}
-key = {key_variant }
-value = { Object | Array | StringValue | Number | Boolean | null | undefined | NaN | Infinity | BigInt}
-pair = {key ~ _colon ~ value ~ _comma?}
+key_complex = {(key_letter | key_digit | _key_sign)*}
+key_simple = {key_letter}
+key_mixed_content = _{_quote_start ~ key_complex ~ _quote_end }
+key_variant= {key_simple | key_mixed_content}
+value = { Object | Array | StringValue |  BigInt  | Number | Boolean | null | undefined | NaN | Infinity}
+pair = {key_variant ~ _colon ~ value ~ _comma?}
 Array = {_left_bracket ~ (value ~ _comma?)* ~ _right_bracket}
 Object = {_left_brace ~ pair* ~ _right_brace}
 ESon = {SOI ~ Object ~ EOI}

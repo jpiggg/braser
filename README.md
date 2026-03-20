@@ -35,6 +35,8 @@ Right now we support those types of data:
 
 The braser supports different targets, depending on your needs. Right now it is supported for usage in nodejs, web (with webpack/rollup/esbuild/etc) or either with a script tag.
 
+@TODO: add docs about how to run different tests (e2e, pest-generated, unit-tests, etc)
+
 ### Usage in Browser
 
 // @TODO 

@@ -83,9 +83,30 @@ pub mod ast {
         pub value: &'pest str
     }
 
+    // #[derive(PartialEq, Debug, pest_ast::FromPest)]
+    // #[pest_ast(rule(Rule::key_variant))]
+    // pub struct Key<'pest> {
+    //     #[pest_ast(outer(with(span_into_str)))]
+    //     pub value: &'pest str
+    // }
+
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
-    #[pest_ast(rule(Rule::key))]
-    pub struct Key<'pest> {
+    #[pest_ast(rule(Rule::key_variant))]
+    pub enum Key<'pest> {
+        KeySimple(String<'pest>),
+        KeyComplex(String<'pest>),
+    }
+
+    #[derive(PartialEq, Debug, pest_ast::FromPest)]
+    #[pest_ast(rule(Rule::key_simple))]
+    pub struct KeySimple<'pest> {
+        #[pest_ast(outer(with(span_into_str)))]
+        pub value: &'pest str
+    }
+
+     #[derive(PartialEq, Debug, pest_ast::FromPest)]
+    #[pest_ast(rule(Rule::key_complex))]
+    pub struct KeyComplex<'pest> {
         #[pest_ast(outer(with(span_into_str)))]
         pub value: &'pest str
     }
@@ -144,42 +165,42 @@ mod tests {
             object: ast::Object {
                 pair: vec![
                     ast::Pair {
-                        key: ast::Key { value: "name" },
+                        key: ast::Key::KeySimple(ast::String {value: "name"}),
                         value: ast::Value::Number(ast::Number { value: 13.0 }),
                         comment: None
                     },
                     ast::Pair {
-                        key: ast::Key { value: "value" },
+                        key: ast::Key::KeySimple(ast::String {value: "value"}),
                         value: ast::Value::String(ast::String { value: "ba\\'z" }),
                         comment: None
                     },
                     ast::Pair {
-                         key: ast::Key { value: "isDefined" },
+                         key: ast::Key::KeySimple(ast::String {value: "isDefined"}),
                          value: ast::Value::Boolean(ast::Boolean { value: false }),
                          comment: None
                     },
                     ast::Pair {
-                        key: ast::Key { value: "isNotDefined" },
+                        key: ast::Key::KeySimple(ast::String {value: "isNotDefined"}),
                         value: ast::Value::Boolean(ast::Boolean { value: true }),
                         comment: Some(ast::Comment { value: "// This is a response from some API"})
                     },
                     ast::Pair {
-                        key: ast::Key { value: "data" },
+                        key: ast::Key::KeySimple(ast::String {value: "data"}),
                         value: ast::Value::Undefined(ast::Undefined {}),
                         comment: None
                     },
                     ast::Pair {
-                        key: ast::Key { value: "valid_until" },
+                        key: ast::Key::KeyComplex(ast::String {value: "valid_until"}),
                         value: ast::Value::NaN(ast::NaN {}),
                         comment: None
                     },
                     ast::Pair {
-                        key: ast::Key { value: "valid_from" },
+                        key: ast::Key::KeyComplex(ast::String {value: "valid_from"}),
                         value: ast::Value::Number(ast::Number { value: 1763225669356.0 }),
                         comment: Some(ast::Comment { value : "/*\n    All cool guys use buffer like this:\n    [1, 2, 3] // Yes, it is a comment inside another one!\n  */"})
                     },
                     ast::Pair {
-                        key: ast::Key { value: "buffer"},
+                        key: ast::Key::KeySimple(ast::String {value: "buffer"}),
                         value: ast::Value::Array(Box::new(ast::Array {
                             value: vec![
                                 ast::Value::Number(ast::Number { value: 16.0 }),
@@ -194,7 +215,7 @@ mod tests {
                         comment: None
                     },
                     ast::Pair {
-                        key: ast::Key { value: "src"},
+                        key: ast::Key::KeySimple(ast::String {value: "src"}),
                         value: ast::Value::Array(Box::new(ast::Array {
                             value: vec![
                                 ast::Value::String(ast::String { value: "a" }),
@@ -205,7 +226,7 @@ mod tests {
                         comment: None
                     },
                     ast::Pair {
-                        key: ast::Key { value: "source"},
+                        key: ast::Key::KeyComplex(ast::String {value: "source42"}),
                         value: ast::Value::String(ast::String { value: "abc" }),
                         comment: None
                     }
