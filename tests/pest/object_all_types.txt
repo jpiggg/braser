@@ -38,7 +38,7 @@ Flat object test
 (ESon
   (Object
     (pair
-      (key_variant
+      (key
         (key_simple: "str")
       )
       (value
@@ -46,7 +46,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "str_escaped")
       )
       (value
@@ -54,7 +54,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "str_multiline")
       )
       (value
@@ -62,7 +62,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_simple: "isDefined")
       )
       (value
@@ -70,7 +70,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "num_42")
       )
       (value
@@ -78,7 +78,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "num_negative")
       )
       (value
@@ -86,7 +86,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "num_float")
       )
       (value
@@ -94,7 +94,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "num_negative_float")
       )
       (value
@@ -102,7 +102,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "bool_true")
       )
       (value
@@ -110,7 +110,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "bool_false")
       )
       (value
@@ -118,7 +118,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "null_val")
       )
       (value
@@ -127,7 +127,7 @@ Flat object test
     )
     (COMMENT: "/*\n    All cool guys use buffer like this:\n    [1, 2, 3] // Yes, it is a comment inside another one!\n  */")
     (pair
-      (key_variant
+      (key
         (key_complex: "nan_val")
       )
       (value
@@ -135,7 +135,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "infinity_val")
       )
       (value
@@ -143,7 +143,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "infinity_negative")
       )
       (value
@@ -151,7 +151,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "bigint_pos")
       )
       (value
@@ -159,7 +159,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_complex: "bigint_neg")
       )
       (value
@@ -167,7 +167,7 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_simple: "arr")
       )
       (value
@@ -194,13 +194,13 @@ Flat object test
       )
     )
     (pair
-      (key_variant
+      (key
         (key_simple: "nested")
       )
       (value
         (Object
           (pair
-            (key_variant
+            (key
               (key_simple: "inner")
             )
             (value
@@ -208,7 +208,7 @@ Flat object test
             )
           )
           (pair
-            (key_variant
+            (key
               (key_complex: "nested_num")
             )
             (value
@@ -216,7 +216,7 @@ Flat object test
             )
           )
           (pair
-            (key_variant
+            (key
               (key_complex: "empty_arr")
             )
             (value
@@ -224,7 +224,7 @@ Flat object test
             )
           )
           (pair
-            (key_variant
+            (key
               (key_complex: "empty_obj")
             )
             (value
@@ -232,7 +232,7 @@ Flat object test
             )
           )
           (pair
-            (key_variant
+            (key
               (key_complex: "deep_array")
             )
             (value
