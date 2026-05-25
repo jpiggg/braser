@@ -13,14 +13,21 @@ pub mod ast {
     use pest::Span;
 
     fn span_into_str(span: Span) -> &str {
-        println!("Span: {:?}", span);
         span.as_str()
+    }
+
+    fn extract_infinity(span: Span) -> &str {      
+        let r = if span.as_str().starts_with("-") {
+            "-1"
+        } else {
+            "1"
+        };
+
+        r
     }
 
     fn extract_key_into_str(span: Span) -> &str {
         let s = span.as_str();
-
-        println!("Extracting key from span: {:?}", &s[1..s.len() - 1]);
         &s[1..s.len() - 1]
     }
 
@@ -48,7 +55,10 @@ pub mod ast {
 
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::Infinity))]
-    pub struct Infinity {}
+    pub struct Infinity {
+        #[pest_ast(outer(with(extract_infinity), with(str::parse), with(Result::unwrap)))]
+        pub value: i8,
+    }
 
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::undefined))]
@@ -91,26 +101,12 @@ pub mod ast {
         pub value: &'pest str
     }
 
-    // #[derive(PartialEq, Debug, pest_ast::FromPest)]
-    // #[pest_ast(rule(Rule::key_variant))]
-    // pub struct Key<'pest> {
-    //     #[pest_ast(outer(with(span_into_str)))]
-    //     pub value: &'pest str
-    // }
-
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::key))]
     pub enum Key<'pest> {
         KeySimple(KeySimple<'pest>),
         KeyComplex(KeyComplex<'pest>),
     }
-
-    // #[derive(PartialEq, Debug, pest_ast::FromPest)]
-    // #[pest_ast(rule(Rule::key))]
-    // pub struct Key<'pest> {
-    //     #[pest_ast(outer(with(span_into_str)))]
-    //     pub value: &'pest str
-    // }
 
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::key_simple))]
@@ -170,7 +166,6 @@ mod tests {
 
     #[test]
     fn test_flat_object() {
-        // let source = String::from_utf8(std::fs::read("./examples/minimal.eson").unwrap()).unwrap();
         let source = String::from_utf8(std::fs::read("./examples/data.eson").unwrap()).unwrap();
         let mut parse_tree = crate::parse::parser::ESonParser::parse(crate::parse::parser::Rule::ESon, &source).unwrap();
 
@@ -180,21 +175,6 @@ mod tests {
         let expected = ast::ESon {
             object: ast::Object {
                 pair: vec![
-                    // ast::Pair {
-                    //     key: ast::Key::KeyComplex(ast::KeyComplex { value: "str" }),
-                    //     value: ast::Value::Number(ast::Number { value: 42.0 }),
-                    //     comment: None
-                    // },
-                    // ast::Pair {
-                    //     key: ast::Key::KeyComplex(ast::KeyComplex { value: "another_str" }),
-                    //     value: ast::Value::Number(ast::Number { value: 50.0 }),
-                    //     comment: None
-                    // },
-                    // ast::Pair {
-                    //     key: ast::Key::KeySimple(ast::KeySimple { value: "simple" }),
-                    //     value: ast::Value::Number(ast::Number { value: 00000.0 }),
-                    //     comment: None
-                    // },
                     ast::Pair {
                         key: ast::Key::KeySimple(ast::KeySimple {value: "str"}),
                         value: ast::Value::String(ast::String {value: "hello"}),
@@ -257,12 +237,12 @@ mod tests {
                     },
                     ast::Pair {
                         key: ast::Key::KeyComplex(ast::KeyComplex {value: "infinity_val"}),
-                        value: ast::Value::Infinity(ast::Infinity {}),
+                        value: ast::Value::Infinity(ast::Infinity {value: 1}),
                         comment: None
                     },
                     ast::Pair {
                         key: ast::Key::KeyComplex(ast::KeyComplex {value: "infinity_negative"}),
-                        value: ast::Value::Infinity(ast::Infinity {}),
+                        value: ast::Value::Infinity(ast::Infinity {value: -1}),
                         comment: None
                     },
                     ast::Pair {

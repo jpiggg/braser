@@ -2,7 +2,6 @@ use wasm_bindgen::prelude::*;
 use js_sys;
 use crate::parse::parser::ast;
 
-//TODO: test it
 pub fn to_object(pairs: &Vec<ast::Pair>) -> js_sys::Object {
     let object = js_sys::Object::new();
 
@@ -50,16 +49,19 @@ pub fn compile_value(value: &ast::Value) -> JsValue {
         },
         ast::Value::Undefined(_) => {
             JsValue::undefined()
-        },
+        },  
         ast::Value::NaN(_) => {
             JsValue::from(f64::NAN)
         },
-        ast::Value::Infinity(_) => {
-            js_sys::Number::POSITIVE_INFINITY.into()
+        ast::Value::Infinity(i) => {
+            if i.value < 0 {
+                js_sys::Number::NEGATIVE_INFINITY.into()
+            } else {
+                js_sys::Number::POSITIVE_INFINITY.into()
+            }
         },
-        //@TODO: test it!
         ast::Value::BigInt(bi) => {
-            JsValue::bigint_from_str(&bi.value[0..bi.value.len() - 2])
+            JsValue::bigint_from_str(&bi.value[0..bi.value.len() - 1])
         }
     }
 }
