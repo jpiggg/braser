@@ -13,7 +13,15 @@ pub mod ast {
     use pest::Span;
 
     fn span_into_str(span: Span) -> &str {
+        println!("Span: {:?}", span);
         span.as_str()
+    }
+
+    fn extract_key_into_str(span: Span) -> &str {
+        let s = span.as_str();
+
+        println!("Extracting key from span: {:?}", &s[1..s.len() - 1]);
+        &s[1..s.len() - 1]
     }
 
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
@@ -93,9 +101,16 @@ pub mod ast {
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::key))]
     pub enum Key<'pest> {
-        KeySimple(String<'pest>),
-        KeyComplex(String<'pest>),
+        KeySimple(KeySimple<'pest>),
+        KeyComplex(KeyComplex<'pest>),
     }
+
+    // #[derive(PartialEq, Debug, pest_ast::FromPest)]
+    // #[pest_ast(rule(Rule::key))]
+    // pub struct Key<'pest> {
+    //     #[pest_ast(outer(with(span_into_str)))]
+    //     pub value: &'pest str
+    // }
 
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::key_simple))]
@@ -103,15 +118,13 @@ pub mod ast {
         #[pest_ast(outer(with(span_into_str)))]
         pub value: &'pest str
     }
-
+    
      #[derive(PartialEq, Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::key_complex))]
     pub struct KeyComplex<'pest> {
-        #[pest_ast(outer(with(span_into_str)))]
+        #[pest_ast(outer(with(extract_key_into_str)))]
         pub value: &'pest str
     }
-
-    //@TODO: научиться парсить комментарии, если перед ними идет запятая
 
     #[derive(PartialEq, Debug, pest_ast::FromPest)]
     #[pest_ast(rule(Rule::pair))]
@@ -157,81 +170,171 @@ mod tests {
 
     #[test]
     fn test_flat_object() {
+        // let source = String::from_utf8(std::fs::read("./examples/minimal.eson").unwrap()).unwrap();
         let source = String::from_utf8(std::fs::read("./examples/data.eson").unwrap()).unwrap();
         let mut parse_tree = crate::parse::parser::ESonParser::parse(crate::parse::parser::Rule::ESon, &source).unwrap();
+
+        println!("----------> Parse tree: {:#?}", parse_tree);
         let syntax_tree: ast::ESon = ast::ESon::from_pest(&mut parse_tree).expect("infallible");
 
         let expected = ast::ESon {
             object: ast::Object {
-                // pair: vec![
-                //     ast::Pair {
-                //         key: ast::Key::KeySimple(ast::String {value: "name"}),
-                //         value: ast::Value::Number(ast::Number { value: 13.0 }),
-                //         comment: None
-                //     },
-                //     ast::Pair {
-                //         key: ast::Key::KeySimple(ast::String {value: "value"}),
-                //         value: ast::Value::String(ast::String { value: "ba\\'z" }),
-                //         comment: None
-                //     },
-                //     ast::Pair {
-                //          key: ast::Key::KeySimple(ast::String {value: "isDefined"}),
-                //          value: ast::Value::Boolean(ast::Boolean { value: false }),
-                //          comment: None
-                //     },
-                //     ast::Pair {
-                //         key: ast::Key::KeySimple(ast::String {value: "isNotDefined"}),
-                //         value: ast::Value::Boolean(ast::Boolean { value: true }),
-                //         comment: Some(ast::Comment { value: "// This is a response from some API"})
-                //     },
-                //     ast::Pair {
-                //         key: ast::Key::KeySimple(ast::String {value: "data"}),
-                //         value: ast::Value::Undefined(ast::Undefined {}),
-                //         comment: None
-                //     },
-                //     ast::Pair {
-                //         key: ast::Key::KeyComplex(ast::String {value: "valid_until"}),
-                //         value: ast::Value::NaN(ast::NaN {}),
-                //         comment: None
-                //     },
-                //     ast::Pair {
-                //         key: ast::Key::KeyComplex(ast::String {value: "valid_from"}),
-                //         value: ast::Value::Number(ast::Number { value: 1763225669356.0 }),
-                //         comment: Some(ast::Comment { value : "/*\n    All cool guys use buffer like this:\n    [1, 2, 3] // Yes, it is a comment inside another one!\n  */"})
-                //     },
-                //     ast::Pair {
-                //         key: ast::Key::KeySimple(ast::String {value: "buffer"}),
-                //         value: ast::Value::Array(Box::new(ast::Array {
-                //             value: vec![
-                //                 ast::Value::Number(ast::Number { value: 16.0 }),
-                //                 ast::Value::Number(ast::Number { value: 21.0 }),
-                //                 ast::Value::Number(ast::Number { value: 51.0 }),
-                //                 ast::Value::Number(ast::Number { value: 0.0 }),
-                //                 ast::Value::Number(ast::Number { value: 0.0 }),
-                //                 ast::Value::Number(ast::Number { value: 0.0 }),
-                //                 ast::Value::Number(ast::Number { value: 0.0 })
-                //             ]
-                //         })),
-                //         comment: None
-                //     },
-                //     ast::Pair {
-                //         key: ast::Key::KeySimple(ast::String {value: "src"}),
-                //         value: ast::Value::Array(Box::new(ast::Array {
-                //             value: vec![
-                //                 ast::Value::String(ast::String { value: "a" }),
-                //                 ast::Value::String(ast::String { value: "b" }),
-                //                 ast::Value::String(ast::String { value: "c" }),
-                //             ]
-                //         })),
-                //         comment: None
-                //     },
-                //     ast::Pair {
-                //         key: ast::Key::KeyComplex(ast::String {value: "source42"}),
-                //         value: ast::Value::String(ast::String { value: "abc" }),
-                //         comment: None
-                //     }
-                // ]
-                pair: vec![]
+                pair: vec![
+                    // ast::Pair {
+                    //     key: ast::Key::KeyComplex(ast::KeyComplex { value: "str" }),
+                    //     value: ast::Value::Number(ast::Number { value: 42.0 }),
+                    //     comment: None
+                    // },
+                    // ast::Pair {
+                    //     key: ast::Key::KeyComplex(ast::KeyComplex { value: "another_str" }),
+                    //     value: ast::Value::Number(ast::Number { value: 50.0 }),
+                    //     comment: None
+                    // },
+                    // ast::Pair {
+                    //     key: ast::Key::KeySimple(ast::KeySimple { value: "simple" }),
+                    //     value: ast::Value::Number(ast::Number { value: 00000.0 }),
+                    //     comment: None
+                    // },
+                    ast::Pair {
+                        key: ast::Key::KeySimple(ast::KeySimple {value: "str"}),
+                        value: ast::Value::String(ast::String {value: "hello"}),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "str_escaped"}),
+                        value: ast::Value::String(ast::String {value: "hello\\\"world'test"}),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "str_multiline"}),
+                        value: ast::Value::String(ast::String {value: "line1\\nline2\\nline3"}),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeySimple(ast::KeySimple {value: "isDefined"}),
+                        value: ast::Value::Undefined(ast::Undefined {}),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "num_42"}),
+                        value: ast::Value::Number(ast::Number { value: 42.0 }),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "num_negative"}),
+                        value: ast::Value::Number(ast::Number { value: -42.0 }),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "num_float"}),
+                        value: ast::Value::Number(ast::Number { value: 3.14159 }),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "num_negative_float"}),
+                        value: ast::Value::Number(ast::Number { value: -3.14159 }),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "bool_true"}),
+                        value: ast::Value::Boolean(ast::Boolean { value: true }),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "bool_false"}),
+                        value: ast::Value::Boolean(ast::Boolean { value: false }),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "null_val"}),
+                        value: ast::Value::Null(ast::Null {}),
+                        comment: Some(ast::Comment { value: "/*\n    All cool guys use buffer like this:\n    [1, 2, 3] // Yes, it is a comment inside another one!\n  */"})
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "nan_val"}),
+                        value: ast::Value::NaN(ast::NaN {}),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "infinity_val"}),
+                        value: ast::Value::Infinity(ast::Infinity {}),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "infinity_negative"}),
+                        value: ast::Value::Infinity(ast::Infinity {}),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "bigint_pos"}),
+                        value: ast::Value::BigInt(ast::BigInt { value: "123456789n" }),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeyComplex(ast::KeyComplex {value: "bigint_neg"}),
+                        value: ast::Value::BigInt(ast::BigInt { value: "-987654321n" }),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeySimple(ast::KeySimple {value: "arr"}),
+                        value: ast::Value::Array(Box::new(ast::Array {
+                            value: vec![
+                                ast::Value::Number(ast::Number { value: 1.0 }),
+                                ast::Value::String(ast::String { value: "two" }),
+                                ast::Value::Boolean(ast::Boolean { value: true }),
+                                ast::Value::Number(ast::Number { value: -5.5 }),
+                                ast::Value::Null(ast::Null {}),
+                                ast::Value::BigInt(ast::BigInt { value: "999n" })
+                            ]
+                        })),
+                        comment: None
+                    },
+                    ast::Pair {
+                        key: ast::Key::KeySimple(ast::KeySimple {value: "nested"}),
+                        value: ast::Value::Object(Box::new(ast::Object {
+                            pair: vec![
+                                ast::Pair {
+                                    key: ast::Key::KeySimple(ast::KeySimple {value: "inner"}),
+                                    value: ast::Value::String(ast::String {value: "value"}),
+                                    comment: None
+                                },
+                                ast::Pair {
+                                    key: ast::Key::KeyComplex(ast::KeyComplex {value: "nested_num"}),
+                                    value: ast::Value::Number(ast::Number { value: -99.99 }),
+                                    comment: None
+                                },
+                                ast::Pair {
+                                    key: ast::Key::KeyComplex(ast::KeyComplex {value: "empty_arr"}),
+                                    value: ast::Value::Array(Box::new(ast::Array { value: vec![] })),
+                                    comment: None
+                                },
+                                ast::Pair {
+                                    key: ast::Key::KeyComplex(ast::KeyComplex {value: "empty_obj"}),
+                                    value: ast::Value::Object(Box::new(ast::Object { pair: vec![] })),
+                                    comment: None
+                                },
+                                ast::Pair {
+                                    key: ast::Key::KeyComplex(ast::KeyComplex {value: "deep_array"}),
+                                    value: ast::Value::Array(Box::new(ast::Array {
+                                        value: vec![
+                                            ast::Value::Array(Box::new(ast::Array {
+                                                value: vec![
+                                                    ast::Value::Array(Box::new(ast::Array {
+                                                        value: vec![
+                                                            ast::Value::Number(ast::Number { value: 0.0 })
+                                                        ]
+                                                    }))
+                                                ]
+                                            }))
+                                        ]
+                                    })),
+                                    comment: None
+                                }
+                            ]
+                        })),
+                        comment: None
+                    }
+                ]
             },
             _eoi: ast::EOI
         };

@@ -2,17 +2,14 @@ use wasm_bindgen::prelude::*;
 use js_sys;
 use crate::parse::parser::ast;
 
+//TODO: test it
 pub fn to_object(pairs: &Vec<ast::Pair>) -> js_sys::Object {
     let object = js_sys::Object::new();
 
     for pair in pairs.iter() {
         let key_extracted = match &pair.key {
-            ast::Key::KeySimple(s) => {
-                s.value
-            },
-            ast::Key::KeyComplex(s) => {
-                s.value
-            }
+            ast::Key::KeySimple(s) => s.value,
+            ast::Key::KeyComplex(s) => s.value,
         };
         let key: js_sys::JsString = js_sys::JsString::from(key_extracted);
         let _ = js_sys::Reflect::set(&object, &key, &compile_value(&pair.value));
